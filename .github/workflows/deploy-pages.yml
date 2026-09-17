@@ -1,0 +1,66 @@
+name: De site online zetten
+
+# Deze workflow zet de site op GitHub Pages ZONDER dat er iets in Settings aangeklikt wordt.
+# Hij zet Pages zelf aan (enablement: true) met het token dat GitHub aan deze workflow geeft,
+# en publiceert daarna alleen de site-bestanden. Bij elke push naar main gebeurt dit opnieuw,
+# dus de site loopt altijd gelijk met de repo.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  bouw:
+    name: De site klaarzetten
+    runs-on: ubuntu-latest
+    steps:
+      - name: De bestanden ophalen
+        uses: actions/checkout@v4
+
+      - name: GitHub Pages aanzetten en klaarzetten
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Alleen de site-bestanden in een map zetten
+        run: |
+          mkdir -p _site
+          cp index.html dashboard.html chat-demo.html kaartje_stadhuis_waregem.html _site/ 2>/dev/null || true
+          cp chat-accessibility.css _site/ 2>/dev/null || true
+          cp MAKKELIJKST.md README.md KEURING-LINK.txt _site/ 2>/dev/null || true
+          touch _site/.nojekyll
+          echo "--- wat er online gaat ---"
+          ls -la _site
+
+      - name: De map klaarzetten om te publiceren
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  online:
+    name: Online zetten
+    needs: bouw
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.zetten.outputs.page_url }}
+    steps:
+      - name: Publiceren
+        id: zetten
+        uses: actions/deploy-pages@v4
+
+      - name: Het adres melden
+        run: |
+          echo "## De site staat online" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.zetten.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
