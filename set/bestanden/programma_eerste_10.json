@@ -1,0 +1,138 @@
+{
+  "versie": "1",
+  "bijgewerkt": "2026-09-17",
+  "bedoeling": "Tien laadbeurten, tien vragen die het profiel echt verrijken. Daarna stopt het vaste programma.",
+  "regels": [
+    "Eén vraag per laadbeurt, nooit twee.",
+    "De wizard loopt alleen bij laadbeurt 1.",
+    "Bij een persoonlijke vraag staat 'zeg ik liever niet' als laatste optie, en dan gaat het meteen door.",
+    "De profiler slaat een vraag over als het profiel ze al beantwoordt.",
+    "De vorm van de vraag past bij het profiel: aantal opties, lengte, woorden, geluid."
+  ],
+  "vragen": [
+    {
+      "nr": 1,
+      "id": "moment",
+      "vraag": "Wanneer lukt dit het beste voor jou?",
+      "waarom": "Dan plan ik langere dingen op jouw goede moment.",
+      "antwoorden": [
+        "'s Ochtends",
+        "'s Middags",
+        "'s Avonds",
+        "Dat wisselt per dag"
+      ],
+      "gesteld_op": "2026-09-17",
+      "antwoord": "avond",
+      "status": "klaar"
+    },
+    {
+      "nr": 2,
+      "id": "lengte",
+      "vraag": "Hoe lang mag een antwoord zijn als het ingewikkeld wordt?",
+      "waarom": "Dan weet ik of ik langer mag uitleggen of juist moet inkorten.",
+      "antwoorden": [
+        "2 regels",
+        "3 regels",
+        "5 regels",
+        "Zo kort mogelijk, altijd"
+      ]
+    },
+    {
+      "nr": 3,
+      "id": "invoer",
+      "vraag": "Klik je liever, of zeg je liever een nummer?",
+      "waarom": "Dan kies ik standaard de weg die jou het minst moeite kost.",
+      "antwoorden": [
+        "Klikken",
+        "Zeggen",
+        "Hangt af van de dag"
+      ]
+    },
+    {
+      "nr": 4,
+      "id": "helper",
+      "vraag": "Kijkt er wel eens iemand met je mee?",
+      "waarom": "Dan maak ik teksten die ook voor die persoon bruikbaar zijn.",
+      "antwoorden": [
+        "Ja, vaak",
+        "Soms",
+        "Nee, nooit"
+      ],
+      "persoonlijk": true
+    },
+    {
+      "nr": 5,
+      "id": "nooit",
+      "vraag": "Wat mag nooit gebeuren in een gesprek met mij?",
+      "waarom": "Dan zet ik dat in mijn vaste verboden lijst, voor jou.",
+      "antwoorden": [
+        "Voorlezen zonder dat ik het vraag",
+        "Uitleg die ik niet vroeg",
+        "Lange teksten",
+        "Herhalen wat ik al weet"
+      ]
+    },
+    {
+      "nr": 6,
+      "id": "stopte",
+      "vraag": "Waar stopte een gesprek vroeger omdat het te veel werd?",
+      "waarom": "Dan vermijd ik precies dat.",
+      "antwoorden": [
+        "Te veel opties",
+        "Te veel tekst",
+        "Te veel vragen",
+        "Dat is nooit gebeurd"
+      ]
+    },
+    {
+      "nr": 7,
+      "id": "tijd",
+      "vraag": "Hoeveel tijd heb je meestal voor zo'n gesprek?",
+      "waarom": "Dan houd ik mijn antwoorden binnen die tijd.",
+      "antwoorden": [
+        "Minder dan 5 minuten",
+        "5 tot 15 minuten",
+        "Zolang als nodig"
+      ]
+    },
+    {
+      "nr": 8,
+      "id": "fouten",
+      "vraag": "Wil je dat ik mijn eigen fouten meteen meld?",
+      "waarom": "Dan weet je wanneer je mij niet moet geloven.",
+      "antwoorden": [
+        "Ja, altijd",
+        "Alleen grote fouten",
+        "Nee, dat hoeft niet"
+      ]
+    },
+    {
+      "nr": 9,
+      "id": "proactief",
+      "vraag": "Mag ik iets voorstellen zonder dat je erom vraagt?",
+      "waarom": "Dan weet ik of ik stil moet blijven of mee mag denken.",
+      "antwoorden": [
+        "Ja graag",
+        "Alleen als ik het vraag",
+        "Liever niet"
+      ]
+    },
+    {
+      "nr": 10,
+      "id": "goed",
+      "vraag": "Waaraan merk je dat een gesprek goed liep?",
+      "waarom": "Dan meet ik mijn eigen werk aan jouw maatstaf.",
+      "antwoorden": [
+        "Ik had mijn antwoord",
+        "Ik moest niets uitleggen",
+        "Het was kort",
+        "Ik durfde verder te vragen"
+      ]
+    }
+  ],
+  "voortgang": {
+    "gesteld": 1,
+    "klaar": 1,
+    "volgende": 2
+  }
+}

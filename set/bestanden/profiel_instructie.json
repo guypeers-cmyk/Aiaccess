@@ -1,0 +1,40 @@
+{
+  "instructie_versie": "1",
+  "bijgewerkt": "2026-09-17",
+  "bron": "profiler (60) — gebaseerd op kern en logboek",
+  "doel": "AI-tools toegankelijk maken voor iedere persoon, met of zonder beperkingen",
+  "antwoord": {
+    "regels": 3,
+    "regels_slechte_dag": 2,
+    "vragen_per_bericht": 1,
+    "volgorde": "antwoord eerst"
+  },
+  "opties": {
+    "aantal": 3,
+    "aantal_bij_twijfel": 2,
+    "open_slot": true,
+    "dieper_knop": true
+  },
+  "beeld": {
+    "letters_px": 28,
+    "thema": "donker",
+    "contrast": "hoog",
+    "min_raakvlak_px": 64
+  },
+  "geluid": "uit",
+  "tempo": "rustig",
+  "verboden": [
+    "nooit typen vragen",
+    "nooit vasthouden of slepen vragen",
+    "nooit twee vragen per bericht",
+    "nooit een diagnose of gevoel",
+    "nooit een tabel",
+    "nooit twee teams laten spreken"
+  ],
+  "team": {
+    "actief": "HANDS_FREE",
+    "rest": "zwijgt"
+  },
+  "toets_door": "teamleider — vóór verzenden",
+  "bij_geen_instructie": "veilige standaard, in één regel gezegd"
+}

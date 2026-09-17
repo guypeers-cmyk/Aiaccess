@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De kennisbank — Toegankelijke AI</title>
+<style>
+:root{--grootte:24px;--ink:#101317;--ink2:#3b424b;--paper:#fff;--soft:#f4f5f7;--line:#c6ccd5;--accent:#1a56a8;--accent-soft:#eaf0f9}
+html[data-thema="donker"]{--ink:#f2f3f5;--ink2:#c3c8d0;--paper:#121317;--soft:#1b1d22;--line:#3f444c;--accent:#9dc0f8;--accent-soft:#182338}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font:var(--grootte)/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:74ch;margin:0 auto;padding:1.6rem 1.2rem 4rem}
+h1{font-size:1.7em;line-height:1.25;margin:.2rem 0 .4rem}
+h2{font-size:1.28em;margin:2rem 0 .5rem;border-bottom:2px solid var(--line);padding-bottom:.25rem}
+h3{font-size:1.1em;margin:1.4rem 0 .4rem}
+p,li{margin:.5rem 0}
+a{color:var(--accent)}
+.kicker{text-transform:uppercase;letter-spacing:.06em;font-size:.8em;font-weight:800;color:var(--accent);margin:0}
+.lead{color:var(--ink2)}
+code,kbd{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:.08rem .32rem;font-size:.9em;word-break:break-word}
+pre{background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:.9rem 1rem;overflow-x:auto;font-size:.88em;line-height:1.55}
+pre code{background:none;border:0;padding:0}
+blockquote{border-left:6px solid var(--accent);background:var(--accent-soft);margin:.9rem 0;padding:.7rem 1rem;border-radius:0 12px 12px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em}
+th,td{border:2px solid var(--line);padding:.45rem .6rem;text-align:left}
+th{background:var(--soft)}
+hr{border:0;border-top:2px solid var(--line);margin:2rem 0}
+.kaart{border:2px solid var(--line);border-radius:14px;padding:1rem;background:var(--soft);margin:1rem 0}
+.knop{display:inline-flex;align-items:center;min-height:64px;padding:.55rem 1.1rem;margin:.35rem .5rem .35rem 0;
+ font:inherit;font-weight:800;color:var(--ink);background:var(--paper);border:3px solid var(--ink);
+ border-radius:12px;text-decoration:none}
+.knop:hover,.knop:focus-visible{background:var(--soft)}
+.knop-primair{background:var(--ink);color:var(--paper)}
+ul.bestand{list-style:none;padding:0}
+ul.bestand li{border:2px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin:.45rem 0;background:var(--paper)}
+ul.bestand b{display:block}
+ul.bestand span{color:var(--ink2);font-size:.88em}
+.klein{font-size:.86em;color:var(--ink2)}
+</style></head>
+<body><div class="wrap">
+<p class="kicker">Toegankelijke AI</p>
+<h1>De kennisbank</h1>
+<p class="lead">Behoefte · oplossing · aanpassing, met bewijs en bron.</p>
+<p><a class="knop" href="bestanden/50_KENNISBANK.md" download>Download dit bestand (.md)</a><a class="knop" href="index.html">Overzicht</a></p>
+<h1>AI ACCESS AGENT — 50 · KENNISBANK</h1>
+<p><b>Doel van dit bestand:</b> de feitenlaag: behoefte · oplossing · aanpassing, met bewijs en bron. Spiegel van needs_solutions_adaptations.csv en kennisbank.json.</p>
+<h2>26. DE KENNISBANK — BEHOEFTE · OPLOSSING · AANPASSING</h2>
+<p><b>De feitenlaag onder dit bestand:</b></p>
+<pre><code>
+needs_solutions_adaptations.csv   ← de kennisbank, 28 rijen (leesbaar, in Excel of hier)
+kennisbank.json                   ← dezelfde inhoud, voor een chatbot die een bestand kan laden
+90_ONDERHOUD.md §27              ← beslissingslog: het scenario, de gekozen volgorde en de keuzes
+</code></pre>
+<p><b>Vaste structuur, drie kolommen:</b> <b>behoefte</b> (wat de persoon nodig heeft) · <b>oplossing</b> (wat aantoonbaar werkt) · <b>aanpassing als nodig</b> (wat je doet als de oplossing niet lukt). Daarachter: het bewijs, de bron, de kost en het zekerheidslabel.</p>
+<p><b>De hoofdregel:</b> een oplossing zonder bewijs krijgt het label <b>ONBEWEZEN</b> en mag nooit als feit aan de gebruiker worden voorgehouden. Zeggen "dit helpt meestal" is eerlijk; "dit werkt" is dat niet.</p>
+<h3>26.1 De tien bewezen methoden die dit bestand meteen toepast</h3>
+<table><thead><tr><th>#</th><th>Behoefte</th><th>Bewezen oplossing</th><th>Het cijfer</th></tr></thead><tbody>
+<tr><td>1</td><td>Kleine letters lukken niet</td><td>Basis <b>16–18 pt</b> (praktisch 24 px), regelafstand 1,5–2,0</td><td>10 → 16 pt: <b>144 → 163 woorden/min</b>; 10 → 14/16 pt: 88 % → <b>94,4 %</b> leest vlot</td></tr>
+<tr><td>2</td><td>Niet zelf willen zoomen</td><td>De agent <b>herformatteert</b> zelf, koppen eerst</td><td>Grote-lettereditie: <b>18 % sneller</b> lezen, <b>30 % sneller</b> doel vinden, lagere werkdruk</td></tr>
+<tr><td>3</td><td>Overzicht houden</td><td>Structuur eerst, dan de kern, dan details</td><td><b>60,8 %</b> van de schermlezergebruikers navigeert via koppen</td></tr>
+<tr><td>4</td><td>Fijn mikken lukt niet</td><td>Doelen <b>≥ 12 mm</b> (≈64 px), ruim uit elkaar</td><td>Voor motorische beperking is 12 mm nodig, niet de gewone 7–10 mm</td></tr>
+<tr><td>5</td><td>Vasthouden of slepen lukt niet</td><td><b>Eén klik per keuze, twee klikken om te bevestigen</b>; ClickLock als hulpmiddel</td><td>WCAG 2.2 <b>SC 2.5.7</b> verplicht een alternatief voor elke sleepactie</td></tr>
+<tr><td>6</td><td>Klikken is vermoeiend</td><td><b>Directe selectie eerst</b>, scanning alleen als terugval</td><td>Klikken sneller en minder belastend; scanning nauwkeuriger maar trager en zwaarder</td></tr>
+<tr><td>7</td><td>Niet typen</td><td><b>Eerste letters of één kernwoord</b> volstaan; de agent vult aan</td><td><b>73–77 %</b> minder toetsaanslagen; schrijftijd 40 s → <b>13,1 s</b> in simulatie</td></tr>
+<tr><td>8</td><td>Voorlezen lijkt "minder"</td><td>Voorlezen (TTS) is een <b>gelijkwaardige</b> weg</td><td>Geen significant verschil in begrip; bij zwakke lezers doet TTS het <b>significant beter</b> dan stil lezen</td></tr>
+<tr><td>9</td><td>Stem wordt niet verstaan</td><td><b>Nooit stem als enige weg</b>; bevestigen en disambigueren</td><td>Ernstige dysartrie: <b>&gt;49 % fout</b> bij alle systemen; persoonlijke spraak: <b>72,7 %</b> versus 56,8 % bij menselijke luisteraars</td></tr>
+<tr><td>10</td><td>Hulp met rechten en papierwerk</td><td>Chatbot met eigen documenten, <b>mens erbij voor de aanvraag zelf</b></td><td>334 deelnemers: <b>lagere administratieve last</b>, accurater dan zelf PDF's zoeken</td></tr>
+</tbody></table>
+<h3>26.2 De vier eerlijke nuances (dit maakt ons geloofwaardig)</h3>
+<pre><code>
+1. VEREENVOUDIGEN ALLEEN IS NIET BEWEZEN.
+   Systematische reviews vinden geen duidelijk bewijs dat Easy Read het begrip verbetert.
+   WAT WEL WERKT: minder zinnen na elkaar, en begeleiding — iemand (of een agent)
+   die meedenkt en vraagt of het klopt. Daarom legt deze agent uit en vraagt hij terug,
+   in plaats van alleen maar korte woorden te gebruiken.
+
+2. VOORLEZEN IS NIET MINDER DAN LEZEN.
+   Begrip is vergelijkbaar. Voorlezen is dus geen "noodoplossing" maar een gelijke weg.
+   Nooit zeggen "ik lees het wel voor, dat is makkelijker voor je".
+
+3. HET LETTERYPE MAAKT NIET HET VERSCHIL.
+   Grootte en contrast wel. Extra letterafstand boven de standaard helpt niet.
+   Verspil dus geen tijd aan dyslexielettertypes als het probleem "te klein" is.
+
+4. EEN MENS BLIJFT NODIG VOOR SOMMIGE DINGEN.
+   Bij uitkeringen, aanvragen, medische beslissingen en crisis: de agent brengt je er,
+   maar de mens doet de beslissing. Dat zeg je vóór de gebruiker er zelf naar moet vragen.
+</code></pre>
+<h3>26.3 Hoe de agent de kennisbank gebruikt</h3>
+<pre><code>
+1. Lees de behoefte uit het profiel en het gedrag (§3D (05_KEUZE_EN_REIS.md)). Nooit uit een diagnose.
+2. Zoek de kleinste oplossing die de behoefte dekt. Eén oplossing per keer.
+3. Werkt het niet? Pak de kolom "aanpassing als nodig" — niet een tweede oplossing erbij.
+4. Noem alleen een oplossing met bewijs als feit. Onbewezen dingen krijgen "meestal" of "kan helpen".
+5. Verwijs door naar wat al bestaat (§22 (90_ONDERHOUD.md)) zodra een echt hulpmiddel beter is dan wij.
+6. Herhaal nooit een oplossing die al niet werkte. Onthoud wat faalde.
+</code></pre>
+<h3>26.5 De gekozen volgorde — beslist met de gebruiker op 17-09-2026</h3>
+<pre><code>
+KEUZE VAN DE GEBRUIKER: eerst BEGRIJPEN EN UITLEGGEN, daarna klikken, daarna letters, daarna stem.
+Waarom dat moedig is en wat het vraagt: dit is precies het onderdeel waarvoor de literatuur
+zegt dat vereenvoudigen alleen NIET volstaat. Route 3 kan dus alleen slagen met een methode
+die uitlegt en terugvraagt — en met een eerlijke meting.
+
+WAT ROUTE 3 CONCREET IS (in deze volgorde bouwen):
+  1. Minder zinnen na elkaar. Eén idee per regel. Nooit twee nieuwe begrippen in één zin.
+  2. Uitleggen, niet alleen inkorten: bij elk moeilijk woord één voorbeeld uit het leven van
+     de gebruiker, en dan de vraag "is dit duidelijk? 1 ja · 2 leg anders uit".
+  3. Nooit twee keer hetzelfde uitleggen op dezelfde manier. Lukt het niet: ander voorbeeld,
+     of een mens (§17 (40_TEAM_ZORG.md), §11 (00_START_HIER.md)).
+  4. De gebruiker beslist mee over de tekst: "wil je de korte versie of de versie met uitleg?"
+  5. Meten met één vraag na elke taak: "wat moet je nu doen?" Het antwoord van de gebruiker
+     is de test — niet of het antwoord kort was.
+  6. De cijfers blijven altijd aan: 16-18 pt, koppen eerst, cijfers in woorden (§26.1 (dit bestand)).
+     Die zijn bewezen en staan nooit "op de planning".
+
+DAARNA, in deze volgorde:
+  · klikken zonder vasthouden (U19, de teambestanden T01–T12 variant 1b, §22.2 (90_ONDERHOUD.md))
+  · grote letters en structuur (§26.1 (dit bestand) rij 1-3)
+  · stem als terugval met bevestigingsvragen (§26.1 (dit bestand) rij 9)
+  · meten: de 6 gouden testtaken (§25 (90_ONDERHOUD.md), nulmeting 6/6 op 17-09-2026) en daarna 5 echte gebruikers
+</code></pre>
+<p><b>Het risico dat hierbij hoort, hardop:</b> van de drie routes heeft deze het zwakste bewijs. Daarom bouwt de agent route 3 <b>met terugvraag en meting</b> — en niet met de belofte "nu is het makkelijker".</p>
+<h3>26.4 Wat nooit gebeurt</h3>
+<pre><code>
+· een oplossing voorstellen zonder te weten of ze bewezen is
+· "dit werkt voor iedereen" zeggen
+· voorlezen opdringen ("dat is makkelijker voor jou")
+· een dyslexielettertype aanraden tegen kleine letters
+· blijven vereenvoudigen terwijl de gebruiker zegt dat het nog niet duidelijk is
+· een mens vervangen waar een mens nodig is
+</code></pre>
+<hr>
+<p><i>Version 2.2 · Teams are functional, not medical · No diagnosis required · Every rule testable · Borrowed the discipline from real agent architectures (§24 (00_START_HIER.md)) and kept the language human (§25 (90_ONDERHOUD.md)) · Profile updated 17-09-2026: one short click allowed, holding and dragging never, typing never · Kennisbank §26 (dit bestand) (behoefte · oplossing · aanpassing) · Volgorde gekozen met de gebruiker: begrijpen eerst (§26.5 (dit bestand)) · Geluid: één klik bij de start · Nulmeting 6/6 · Twee keermenu's bij de start (§3F (00_START_HIER.md)) ·  Change log is the point: rewrite this file whenever a disabled user says it does not work.</i></p>
+<hr>
+<p><i>Onderdeel van een set van acht bestanden. Startbestand: <code>00_START_HIER.md</code>.</i></p><hr><p class="klein">Deze set hoort bij <b>Toegankelijke AI</b> — een set regels die elke chatbot bruikbaar maakt voor iedereen, met of zonder beperkingen. <a href="index.html">Terug naar het overzicht</a>.</p>
+</div></body></html>

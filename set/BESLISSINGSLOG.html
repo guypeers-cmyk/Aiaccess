@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Het beslissingslog — Toegankelijke AI</title>
+<style>
+:root{--grootte:24px;--ink:#101317;--ink2:#3b424b;--paper:#fff;--soft:#f4f5f7;--line:#c6ccd5;--accent:#1a56a8;--accent-soft:#eaf0f9}
+html[data-thema="donker"]{--ink:#f2f3f5;--ink2:#c3c8d0;--paper:#121317;--soft:#1b1d22;--line:#3f444c;--accent:#9dc0f8;--accent-soft:#182338}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font:var(--grootte)/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:74ch;margin:0 auto;padding:1.6rem 1.2rem 4rem}
+h1{font-size:1.7em;line-height:1.25;margin:.2rem 0 .4rem}
+h2{font-size:1.28em;margin:2rem 0 .5rem;border-bottom:2px solid var(--line);padding-bottom:.25rem}
+h3{font-size:1.1em;margin:1.4rem 0 .4rem}
+p,li{margin:.5rem 0}
+a{color:var(--accent)}
+.kicker{text-transform:uppercase;letter-spacing:.06em;font-size:.8em;font-weight:800;color:var(--accent);margin:0}
+.lead{color:var(--ink2)}
+code,kbd{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:.08rem .32rem;font-size:.9em;word-break:break-word}
+pre{background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:.9rem 1rem;overflow-x:auto;font-size:.88em;line-height:1.55}
+pre code{background:none;border:0;padding:0}
+blockquote{border-left:6px solid var(--accent);background:var(--accent-soft);margin:.9rem 0;padding:.7rem 1rem;border-radius:0 12px 12px 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em}
+th,td{border:2px solid var(--line);padding:.45rem .6rem;text-align:left}
+th{background:var(--soft)}
+hr{border:0;border-top:2px solid var(--line);margin:2rem 0}
+.kaart{border:2px solid var(--line);border-radius:14px;padding:1rem;background:var(--soft);margin:1rem 0}
+.knop{display:inline-flex;align-items:center;min-height:64px;padding:.55rem 1.1rem;margin:.35rem .5rem .35rem 0;
+ font:inherit;font-weight:800;color:var(--ink);background:var(--paper);border:3px solid var(--ink);
+ border-radius:12px;text-decoration:none}
+.knop:hover,.knop:focus-visible{background:var(--soft)}
+.knop-primair{background:var(--ink);color:var(--paper)}
+ul.bestand{list-style:none;padding:0}
+ul.bestand li{border:2px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin:.45rem 0;background:var(--paper)}
+ul.bestand b{display:block}
+ul.bestand span{color:var(--ink2);font-size:.88em}
+.klein{font-size:.86em;color:var(--ink2)}
+</style></head>
+<body><div class="wrap">
+<p class="kicker">Toegankelijke AI</p>
+<h1>Het beslissingslog</h1>
+<p class="lead">Elke beslissing van het systeem vastgelegd, met de bron erbij.</p>
+<p><a class="knop" href="bestanden/BESLISSINGSLOG.md" download>Download dit bestand (.md)</a><a class="knop" href="index.html">Overzicht</a></p>
+<h1>BESLISSINGSLOG — één regel per beslissing</h1>
+<p><b>Wat het is:</b> het logboek van het systeem, niet van de gebruiker. Elke beslissing die een agent</p>
+<p>neemt of voorstelt komt er in één regel in. Zo is een fout terug te vinden bij de regel die hem</p>
+<p>veroorzaakte.</p>
+<p><b>Wie schrijft erin:</b> de <b>beslissingslogger</b> (rol 7 in <code>60_PROFILER.md</code>). Alleen die.</p>
+<p><b>Wie leest het:</b> de maker, de helper, en het onderzoeksteam. Nooit de gebruiker als verrassing —</p>
+<p>bij het sessie-einde hoort het in het rapport te staan.</p>
+<hr>
+<h2>1. Het formaat — precies zes velden</h2>
+<pre><code>
+{"ts":"2026-09-17T14:20:03","wie":"gebruiker","regel":"§F sluis 2 — de gebruiker beslist","bron":"A1","gevolg":"letters op 28 px toegepast","omkeerbaar":true}
+</code></pre>
+<pre><code>
+VELD        WAT ER IN KOMT                                    VOORBEELD
+ts          tijd, ISO, tot op de seconde                      2026-09-17T14:20:03
+wie         wie nam of voorstelde: gebruiker · profiler ·      gebruiker
+            teamleider T03 · onderzoeksteam · sessieteller
+regel       welke regel uit de set dit veroorzaakte            §F sluis 2 — de gebruiker beslist
+            (met § erbij, zodat je hem kan opzoeken)
+bron        betrouwbaarheid van de bron, A–F + 1–6             A1 · B2 · C3 · F6
+gevolg       wat er gebeurde, in één regel, in gewone taal     letters op 28 px toegepast
+omkeerbaar  ja of nee — kan de gebruiker dit terugdraaien?     true
+</code></pre>
+<p><b>Zes velden. Niet zeven, niet vijf.</b> Mist er één, dan is de regel onbruikbaar en telt hij niet.</p>
+<hr>
+<h2>2. De regels van dit log</h2>
+<pre><code>
+1. ÉÉN REGEL PER BESLISSING. Ook als er niets gebeurde: "geen voorstel" is ook een beslissing.
+2. GEEN PERSOONSGEGEVENS. Geen naam, geen adres, geen telefoon, geen inkomen, geen gezin.
+   Geen ziekte, geen diagnose, geen medicijn, geen lichaamsdeel.
+3. GEEN GEVOEL. Nooit "is gefrustreerd", "is bang", "is verward". Alleen gedrag en gevolg.
+4. DE BRON IS VERPLICHT. Zonder broncode weet je niet of een regel iets mocht veranderen.
+5. ELKE WIJZIGING IS OMKEERBAAR. Staat er "false", dan had de wijziging niet mogen doorgaan.
+6. WAT NIET IN HET LOG MAG, BESTAAT NIET — ook niet als gedachte. (Dat is dezelfde regel als in
+   het profiel_log.)
+7. HET LOG IS VAN DE GEBRUIKER. "Wat heb je besloten?" geeft drie regels. "Vergeet het" wist het.
+8. MAXIMAAL ÉÉN OPEN VRAAG PER SESSIE. Staat er een tweede, dan is er iets fout gegaan — en dat
+   zie je terug in de controle.
+</code></pre>
+<hr>
+<h2>3. De controleur — <code>controleer_beslissingslog.py</code></h2>
+<pre><code>
+Draai:   python3 controleer_beslissingslog.py beslissingslog.jsonl
+Doet:    leest elke regel en meldt wat er fout is
+Meldt:   · ontbrekende velden
+         · een broncode die geen A–F met 1–6 is
+         · een wijziging die niet omkeerbaar is
+         · verboden woorden (ziekte, diagnose, adres, telefoon, inkomen, gevoel)
+         · meer dan één open vraag in dezelfde sessie
+</code></pre>
+<p>Zo weet je met één commando of het systeem zich aan zijn eigen regels houdt — zonder dat iemand</p>
+<p>het log hoeft te lezen. De uitkomst is een getal, geen mening.</p>
+<hr>
+<h2>3b. In de site schrijft het zichzelf — getest op 17-09-2026</h2>
+<pre><code>
+TIEN MOMENTEN WAAROP DE SITE EEN REGEL SCHRIJFT
+ 1 de analyse van de profiler          wie: profiler · welke regel: §5 en §21
+ 2 de vraag die gesteld wordt          wie: profiler · "vraag gesteld: …"
+ 3 het antwoord van de gebruiker       wie: gebruiker · bron A1
+ 4 een aanname die ingetrokken wordt   wie: gebruiker · "wordt niet opnieuw geprobeerd"
+ 5 een toegepaste instelling           wie: gebruiker · bron A1
+ 6 het terugdraaien van een wijziging  wie: gebruiker · "vorige stand hersteld"
+ 7 de teamkeuze                        wie: gebruiker · §8 één team tegelijk
+ 8 elke ronde van de ?-knop            wie: profiler · ook als het geweigerd wordt (rondes op)
+ 9 elk antwoord uit de wie-vragen      wie: gebruiker · overslaan wordt ook gelogd
+10 elke keuze uit de instellingen      wie: gebruiker · deel B van de wizard
+</code></pre>
+<p><b>De keuring zit ook in het scherm.</b> De knop "Keur het beslissingslog" doet hetzelfde als het</p>
+<p>Python-script: ontbrekende velden · een broncode die geen A–F met 1–6 is · een wijziging die niet</p>
+<p>omkeerbaar is · een verboden woord · meer dan één open vraag in dezelfde sessie.</p>
+<p><b>Getest met vijf opzettelijke fouten — alle vijf gevonden:</b></p>
+<pre><code>
+regel 1  wijziging die niet omkeerbaar was          → gemeld
+regel 2  broncode Z9 (bestaat niet)                 → gemeld
+regel 3  het woord "bang" in een gevolg             → gemeld
+regel 4  een veld dat ontbrak (ts)                   → gemeld
+regel 5  twee open vragen in dezelfde sessie         → gemeld
+En de ontkenning werd niet vals gemeld: "geen ziekte, geen gevoel" passeert terecht.
+</code></pre>
+<h2>4. Waarom dit bestaat, in drie zinnen</h2>
+<pre><code>
+1. Zonder dit log is een fout niet terug te vinden: zat het in de profiler, in de teamleider,
+   in het onderzoeksteam of in de regel zelf?
+2. Onderzoek naar systemen met meerdere agenten noemt observability vanaf dag één als vereiste,
+   juist omdat een fout in de overdracht kan zitten en niet in het antwoord.
+3. Het log maakt van "wij denken dat het goed gaat" een uitspraak die je kan controleren:
+   hoeveel beslissingen, welke bron, hoeveel omkeerbaar, en hoeveel vragen per sessie.
+</code></pre>
+<hr>
+<h2>5. Wat er nooit in komt — dezelfde verboden lijst als overal</h2>
+<pre><code>
+geen naam · geen adres · geen telefoon · geen e-mail · geen inkomen · geen gezin · geen werkgever
+geen ziekte · geen diagnose · geen medicijn · geen behandeling · geen lichaamsdeel · geen foto
+geen gevoel · geen score over een persoon · geen cijfer dat iemand beoordeelt
+</code></pre>
+<p><i>Onderdeel van de set. Zie <code>60_PROFILER.md</code> §24 voor de rol die dit log schrijft.</i></p><hr><p class="klein">Deze set hoort bij <b>Toegankelijke AI</b> — een set regels die elke chatbot bruikbaar maakt voor iedereen, met of zonder beperkingen. <a href="index.html">Terug naar het overzicht</a>.</p>
+</div></body></html>

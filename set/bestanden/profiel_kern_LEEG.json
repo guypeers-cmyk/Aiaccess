@@ -1,0 +1,38 @@
+{
+  "profiel_versie": "4",
+  "bijgewerkt": "VUL-IN",
+  "bron": "wizard (5 wie-vragen + 7 instellingen) + logboek",
+  "antwoordstijl": {
+    "regels": 3,
+    "opties": 3,
+    "open_slot": true,
+    "vragen_per_bericht": 1
+  },
+  "beeld": {
+    "letters_px": 0,
+    "thema": "",
+    "contrast": "hoog"
+  },
+  "geluid": "",
+  "input": {
+    "klik": "ja, één korte klik",
+    "typen": "nooit",
+    "vasthouden": "nooit"
+  },
+  "gewoontes": [],
+  "vermoeden_niet_delen": [],
+  "team_voorkeur": "",
+  "logboek": {
+    "aan": true,
+    "lokaal": true,
+    "wissen_met": "één klik"
+  },
+  "wie": {
+    "voornaam": "",
+    "leeftijd": "",
+    "geslacht": "",
+    "aanspreking": "",
+    "komt_voor": ""
+  },
+  "ritme": ""
+}
