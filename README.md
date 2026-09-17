@@ -23,6 +23,11 @@ Deze map staat klaar voor **github.com/guypeers-cmyk/Aiaccess**.
 Zie **`ZET_OP_GITHUB.md`** — slepen in de browser kan volledig zonder typen, en met `push.sh`
 gaat het in één opdracht. De site komt op **https://guypeers-cmyk.github.io/Aiaccess/**.
 
+## De set voor andere mensen
+
+In de map `set/` staat de deelbare versie: 23 leesbare pagina's, alle regelbestanden om te
+downloaden, een leeg profielsjabloon en `set/aas.zip` met alles in één keer. Zie `DEEL-LINK.md`.
+
 ## Wat hier bewust NIET in staat
 
 Deze map is bedoeld om openbaar te zijn. Daarom staan jouw werkbestanden er niet in:
