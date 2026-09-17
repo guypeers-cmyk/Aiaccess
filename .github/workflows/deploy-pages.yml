@@ -1,9 +1,11 @@
 name: De site online zetten
 
-# Deze workflow zet de site op GitHub Pages ZONDER dat er iets in Settings aangeklikt wordt.
-# Hij zet Pages zelf aan (enablement: true) met het token dat GitHub aan deze workflow geeft,
-# en publiceert daarna alleen de site-bestanden. Bij elke push naar main gebeurt dit opnieuw,
-# dus de site loopt altijd gelijk met de repo.
+# Deze workflow publiceert de site op GitHub Pages. Zodra Pages één keer is aangezet
+# (Settings -> Pages -> Deploy from a branch -> main -> / (root) -> Save), loopt de site
+# daarna AUTOMATISCH mee met elke push. Er is dan niets meer aan te klikken.
+#
+# Staat Pages nog niet aan, dan stopt deze workflow NETJES met een bericht en zonder
+# foutmelding: zo krijg je geen mails over iets wat je zelf nog moet aanzetten.
 
 on:
   push:
@@ -23,26 +25,49 @@ jobs:
   bouw:
     name: De site klaarzetten
     runs-on: ubuntu-latest
+    outputs:
+      pages: ${{ steps.kijken.outputs.code }}
     steps:
       - name: De bestanden ophalen
         uses: actions/checkout@v4
 
-      - name: GitHub Pages aanzetten en klaarzetten
+      - name: Kijken of Pages al aanstaat
+        id: kijken
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "200" ]; then
+            echo "Pages staat aan. We gaan publiceren."
+          else
+            echo "## Pages staat nog niet aan" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "De bestanden staan klaar in de repo, maar GitHub Pages is nog niet aangezet." >> "$GITHUB_STEP_SUMMARY"
+            echo "Zet het één keer aan: **Settings -> Pages -> Deploy from a branch -> main -> / (root) -> Save**." >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "Daarna publiceert deze workflow de site bij elke push, zonder dat er nog iets geklikt wordt." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: GitHub Pages klaarzetten
+        if: steps.kijken.outputs.code == '200'
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Alleen de site-bestanden in een map zetten
+        if: steps.kijken.outputs.code == '200'
         run: |
           mkdir -p _site
           cp index.html dashboard.html chat-demo.html kaartje_stadhuis_waregem.html _site/ 2>/dev/null || true
           cp chat-accessibility.css _site/ 2>/dev/null || true
           cp MAKKELIJKST.md README.md KEURING-LINK.txt _site/ 2>/dev/null || true
+          cp -r set _site/ 2>/dev/null || true
           touch _site/.nojekyll
           echo "--- wat er online gaat ---"
           ls -la _site
 
       - name: De map klaarzetten om te publiceren
+        if: steps.kijken.outputs.code == '200'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
@@ -50,6 +75,7 @@ jobs:
   online:
     name: Online zetten
     needs: bouw
+    if: needs.bouw.outputs.pages == '200'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
