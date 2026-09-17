@@ -1,0 +1,15 @@
+DE KEURING TOEVOEGEN AAN GITHUB — ÉÉN KLIK
+=========================================
+
+Open je browser, log in op GitHub, en plak deze hele regel in de adresbalk.
+De pagina opent met de bestandsnaam (.github/workflows/keuring.yml) en de hele inhoud
+al ingevuld. Je hoeft dan alleen nog onderaan op Commit changes te klikken.
+
+https://github.com/guypeers-cmyk/Aiaccess/new/main?filename=.github%2Fworkflows%2Fkeuring.yml&value=name%3A%20Keuring%20van%20de%20site%0A%23%20Draait%20na%20elke%20push.%20Groen%20vinkje%20%3D%20in%20orde.%20Rood%20kruis%20%3D%20je%20krijgt%20een%20mailtje.%0A%23%20Wat%20het%20narekent%3A%20nooit%20typen%2C%20niets%20van%20buiten%2C%20knoppen%2064%20px%20en%20letters%2024%20px%2C%0A%23%20geen%20persoonsgegevens%2C%20elke%20keuze%20zegt%20wat%20ze%20doet%2C%20taal%20en%20titel%2C%20geen%20dode%20link.%0Aon%3A%0A%20%20push%3A%0A%20%20%20%20branches%3A%20%5Bmain%5D%0A%20%20pull_request%3A%0A%20%20workflow_dispatch%3A%0Apermissions%3A%0A%20%20contents%3A%20read%0Ajobs%3A%0A%20%20keuring%3A%0A%20%20%20%20name%3A%20Toegankelijkheid%20en%20geen%20persoonsgegevens%0A%20%20%20%20runs-on%3A%20ubuntu-latest%0A%20%20%20%20steps%3A%0A%20%20%20%20%20%20-%20uses%3A%20actions%2Fcheckout%40v4%0A%20%20%20%20%20%20-%20uses%3A%20actions%2Fsetup-python%40v5%0A%20%20%20%20%20%20%20%20with%3A%0A%20%20%20%20%20%20%20%20%20%20python-version%3A%20%273.x%27%0A%20%20%20%20%20%20-%20name%3A%20De%20site%20keuren%0A%20%20%20%20%20%20%20%20run%3A%20%7C%0A%20%20%20%20%20%20%20%20%20%20set%20-o%20pipefail%0A%20%20%20%20%20%20%20%20%20%20python3%20controleer_site.py%20%7C%20tee%20keuring-verslag.txt%0A%20%20%20%20%20%20-%20name%3A%20Het%20verslag%20op%20de%20keuringspagina%20zetten%0A%20%20%20%20%20%20%20%20if%3A%20always%28%29%0A%20%20%20%20%20%20%20%20run%3A%20%7C%0A%20%20%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20echo%20%22%23%23%20Uitslag%20van%20de%20keuring%22%0A%20%20%20%20%20%20%20%20%20%20%20%20echo%20%27%60%60%60%27%0A%20%20%20%20%20%20%20%20%20%20%20%20cat%20keuring-verslag.txt%20%7C%7C%20true%0A%20%20%20%20%20%20%20%20%20%20%20%20echo%20%27%60%60%60%27%0A%20%20%20%20%20%20%20%20%20%20%7D%20%3E%3E%20%22%24GITHUB_STEP_SUMMARY%22%0A%20%20%20%20%20%20-%20name%3A%20Het%20verslag%20bewaren%0A%20%20%20%20%20%20%20%20if%3A%20always%28%29%0A%20%20%20%20%20%20%20%20uses%3A%20actions%2Fupload-artifact%40v4%0A%20%20%20%20%20%20%20%20with%3A%0A%20%20%20%20%20%20%20%20%20%20name%3A%20keuring-verslag%0A%20%20%20%20%20%20%20%20%20%20path%3A%20keuring-verslag.txt%0A&message=De%20keuring%20toevoegen%3A%20draait%20na%20elke%20push
+
+WAAROM ZO: deze map begint met een punt, dus je computer verstopt hem. Met deze link
+maakt GitHub de map zelf aan, en hoef jij niets te typen, te slepen of te onthouden.
+
+GAAT ER IETS MIS, of wil je liever plakken: dezelfde inhoud staat in het bestand
+deploy/.github/workflows/keuring.yml. Naam en inhoud staan daar los, zodat je ze allebei
+kan plakken in de pagina Add file -> Create new file.

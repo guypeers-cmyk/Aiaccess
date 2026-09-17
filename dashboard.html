@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — beslisstructuur van de agenten</title>
+<meta name="description" content="Eén overzicht: de profiler als hart, het onderzoeksteam als controle, twaalf teams, drie speciale teams, en de beslisboom van klik tot uitkomst.">
+<style>
+:root{
+  --grootte:20px; --lk:1.6; --ink:#101317; --paper:#ffffff; --soft:#f4f5f7;
+  --line:#c6ccd5; --accent:#1a56a8; --accent-soft:#eaf0f9; --target:56px;
+  --radius:12px; --max:78ch;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Segoe UI",Verdana,Tahoma,Geneva,sans-serif;font-size:var(--grootte);line-height:var(--lk)}
+h1,h2,h3,h4{line-height:1.25;margin:0 0 .45em}
+h1{font-size:1.6em}
+h2{font-size:1.25em}
+h3{font-size:1.02em}
+p{margin:0 0 .8em}
+a{color:var(--accent);text-underline-offset:.16em}
+a:focus-visible,button:focus-visible,summary:focus-visible,label:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{width:min(1220px,94vw);margin:0 auto;padding:0 0 3rem}
+header.top{border-bottom:2px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:5}
+.top-in{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;justify-content:space-between;padding:.6rem 0}
+.merk{font-weight:800;margin:0;display:flex;align-items:center;gap:.5em}
+.blok{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;
+  border:3px solid var(--ink);border-radius:8px;font-size:.75em;font-weight:900}
+.bediening{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin:0}
+.bediening span{font-size:.8em;font-weight:700;color:#3b424b}
+.btn{min-height:var(--target);padding:.5rem 1rem;font:inherit;font-weight:800;color:var(--ink);
+  background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn[aria-pressed="true"]{border-color:var(--ink);border-width:3px;background:var(--accent-soft)}
+.btn-primair{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+section{padding:2rem 0;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+.kicker{font-size:.74em;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .4rem}
+.lead{color:#3b424b;max-width:var(--max)}
+.grid{display:grid;gap:.9rem}
+.k4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.k3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.kaart{background:var(--paper);border:2px solid var(--line);border-radius:var(--radius);padding:1rem 1.1rem}
+.kaart h3{margin-bottom:.3rem}
+.kaart p{margin:0;color:#3b424b}
+.cijfer{font-size:1.7em;font-weight:800;display:block;line-height:1.1}
+.cijfer-k{font-size:.8em;color:#3b424b;display:block}
+ul.lijst{list-style:none;margin:0;padding:0}
+ul.lijst li{padding:.5rem 0;border-top:1px solid var(--line)}
+ul.lijst li:first-child{border-top:0}
+
+/* ---------- foldable: teams en subagenten ---------- */
+details.team{border:2px solid var(--line);border-radius:var(--radius);margin:0 0 .55rem;background:var(--paper)}
+details.team > summary{
+  min-height:var(--target);display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;
+  cursor:pointer;list-style:none;font-weight:800;border-radius:10px}
+details.team > summary::-webkit-details-marker{display:none}
+details.team > summary::after{content:"+";margin-left:auto;font-weight:900;border:2px solid var(--ink);
+  border-radius:6px;width:1.5em;height:1.5em;display:inline-flex;align-items:center;justify-content:center}
+details.team[open] > summary::after{content:"–"}
+details.team > summary:hover{background:var(--soft)}
+details.team[open] > summary{border-bottom:2px solid var(--line);border-radius:10px 10px 0 0}
+.team-body{padding:.7rem .9rem 1rem}
+.sub{border:2px solid var(--line);border-radius:10px;padding:.3rem .6rem;margin:.4rem 0;background:var(--soft)}
+.sub > summary{min-height:var(--target);display:flex;align-items:center;font-weight:700;cursor:pointer;list-style:none}
+.sub > summary::-webkit-details-marker{display:none}
+.sub > summary::before{content:"▸";margin-right:.5rem;font-weight:900}
+.sub[open] > summary::before{content:"▾"}
+.sub-in{padding:.4rem .2rem .6rem}
+.sub-in p{margin:.2rem 0 .5rem;color:#3b424b}
+.tag{display:inline-block;font-size:.72em;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  border:2px solid var(--ink);border-radius:999px;padding:.1em .6em;margin-right:.35em}
+.tag-a{background:var(--ink);color:var(--paper)}
+.tag-b{background:var(--accent-soft);border-color:var(--accent)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:var(--soft);
+  border:1px solid var(--line);border-radius:6px;padding:.05em .35em}
+
+/* ---------- beslisboom ---------- */
+.boom{border:2px solid var(--line);border-radius:var(--radius);padding:1rem;overflow:auto;background:var(--soft)}
+.boom pre{white-space:pre;font-family:ui-monospace,Consolas,monospace;font-size:.74em;line-height:1.45;margin:0}
+.stap{border:2px solid var(--line);border-radius:var(--radius);margin:.5rem 0;background:var(--paper)}
+.stap > summary{min-height:var(--target);display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;cursor:pointer;font-weight:800;list-style:none}
+.stap > summary::-webkit-details-marker{display:none}
+.stap .n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:1.9em;height:1.9em;
+  border:2px solid var(--ink);border-radius:50%;font-size:.85em;font-weight:900}
+.stap-body{padding:.2rem .9rem .9rem}
+.stap-body p{margin:.3rem 0 .6rem;color:#3b424b}
+.poort{display:flex;gap:.5rem;align-items:center;padding:.35rem 0;border-top:1px solid var(--line)}
+.poort:first-child{border-top:0}
+.poort b{min-width:11ch}
+body.dicht .team-body,body.dicht .sub-in{display:none}
+@media (max-width:640px){:root{--grootte:18px}}
+@media print{header.top,.bediening{display:none}.boom pre{font-size:9pt}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <p class="merk"><span class="blok" aria-hidden="true">◨</span> Dashboard · beslisstructuur</p>
+    <div class="bediening" role="group" aria-label="Bediening">
+      <span>Letters</span>
+      <button type="button" class="btn" data-size="18">18</button>
+      <button type="button" class="btn" data-size="20" aria-pressed="true">20</button>
+      <button type="button" class="btn" data-size="24">24</button>
+      <button type="button" class="btn" id="alles-open">Alles open</button>
+      <button type="button" class="btn" id="alles-dicht">Alles dicht</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <p class="kicker">Overzicht</p>
+    <h1>Wie beslist wat — en wie controleert het</h1>
+    <p class="lead">
+      Alles op één scherm: de beslisstructuur van de agenten, de volledige teamlijst met alle
+      subagenten in uitklapmenu's, en de beslisboom van één klik tot uitkomst. Niets is verborgen
+      achter een hover; alles is met één klik te openen.
+    </p>
+    <div class="grid k4" style="margin-top:1rem">
+      <div class="kaart"><span class="cijfer">24</span><span class="cijfer-k">teams en lagen in totaal</span></div>
+      <div class="kaart"><span class="cijfer">1</span><span class="cijfer-k">stem per gesprek, altijd</span></div>
+      <div class="kaart"><span class="cijfer">5</span><span class="cijfer-k">sluizen vóór een wijziging</span></div>
+      <div class="kaart"><span class="cijfer">3</span><span class="cijfer-k">regels is het maximum in een rapport</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Doel</p>
+    <h2>Het doel van elke agent, en de twee vaste raadplegingen</h2>
+    <div class="grid k3" style="margin-top:.8rem">
+      <div class="kaart"><h3>Het doel</h3><p>AI-tools toegankelijk maken voor <b>iedere persoon, met of zonder beperkingen</b>. Een antwoord dat niet toegankelijk is, is fout — ook als het inhoudelijk juist is.</p></div>
+      <div class="kaart"><h3>Altijd geraadpleegd (1)</h3><p>Bij <b>elk automatisch antwoord</b> haalt de agent de instructie op bij de profiler: regels, opties, geluid, grootte, tempo.</p></div>
+      <div class="kaart"><h3>Altijd geraadpleegd (2)</h3><p><b>Elke teamleider toetst</b> elk automatisch antwoord aan het profiel van de gebruiker vóór het verstuurd wordt. Zakt er iets, dan herschrijft hij het.</p></div>
+    </div>
+
+    <p class="kicker" style="margin-top:1.6rem">Structuur</p>
+    <h2>De lagen, van boven naar beneden</h2>
+    <div class="grid k3" style="margin-top:.8rem">
+      <div class="kaart"><h3>1 · De gebruiker</h3><p>De enige baas. Beslissingen zijn definitief en worden niet betwist. Alles is met één klik terug te draaien.</p></div>
+      <div class="kaart"><h3>2 · De profiler <code>60</code></h3><p>Het hart. Hij onthoudt, leest de kern van één scherm, en stelt voor. Hij spreekt nooit zelf.</p></div>
+      <div class="kaart"><h3>3 · Het onderzoeksteam <code>70</code></h3><p>De controle. Gradeert elke regel, zoekt tegenbewijs, en geeft één oordeel: vertrouwd, nog niet, onbruikbaar.</p></div>
+      <div class="kaart"><h3>4 · De teams</h3><p>Twaalf toegangsteams plus drie speciale teams. Maximaal één tegelijk actief, met één teamleider.</p></div>
+      <div class="kaart"><h3>5 · De kennisbank <code>50</code></h3><p>Feiten met bewijs, in de vorm behoefte · oplossing · aanpassing. Zonder bewijs: ONBEWEZEN.</p></div>
+      <div class="kaart"><h3>6 · De wegwijzer <code>40</code></h3><p>Naar mensen en instanties. Nooit een diagnose, nooit een beslissing over zorg of geld.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Teams</p>
+    <h2>Alle teams, uitklapbaar — met alle subagenten</h2>
+    <p class="lead">Elk team heeft één teamleider die elke beslissing rapporteert, en werkt alleen: geen cross-talk, geen tweede stem.</p>
+    <div style="margin-top:1rem" id="teamlijst">
+
+      <details class="team"><summary><span class="tag tag-a">Hart</span> 60 · Profiler — 5 subagenten</summary>
+        <div class="team-body">
+          <p>Onthoudt, ziet patronen, stelt één gesloten vraag. Zwijgt verder altijd.</p>
+          <details class="sub"><summary>Logboekhouder</summary><div class="sub-in"><p>Schrijft één regel per keuze: tijd, gekozen optie, manier, team, seconden.</p><p><b>Nooit:</b> interpreteren of conclusies trekken.</p></div></details>
+          <details class="sub"><summary>Patroonlezer</summary><div class="sub-in"><p>Meldt een gewoonte vanaf drie keer hetzelfde, altijd met het aantal erbij.</p><p><b>Nooit:</b> iets melden dat één of twee keer gebeurde.</p></div></details>
+          <details class="sub"><summary>Tolk</summary><div class="sub-in"><p>Zet een gewoonte om in één zin met een label: BEWEZEN · WAARSCHIJNLIJK · ONBEWEZEN.</p><p><b>Nooit:</b> een oorzaak noemen die niet in het logboek staat.</p></div></details>
+          <details class="sub"><summary>Voorsteller</summary><div class="sub-in"><p>Maakt de enige zin die de gebruiker ziet: één regel, één vraag, drie opties plus de ?-knop.</p><p><b>Nooit:</b> twee voorstellen in hetzelfde antwoord.</p></div></details>
+          <details class="sub"><summary>Bewaker</summary><div class="sub-in"><p>Keurt af vóór verzenden: zes verboden en vijf zelftestvragen.</p><p><b>Nooit:</b> goedkeuren omdat het "wel zal kloppen".</p></div></details>
+          <details class="sub"><summary>Beslissingslogger</summary><div class="sub-in"><p>Schrijft het <code>beslissingslog.jsonl</code>: één regel per beslissing van het systeem, met zes velden — tijd · wie · welke regel · bron A–F/1–6 · gevolg · omkeerbaar. Ook wanneer het systeem bewust <b>niets</b> voorstelt.</p><p><b>Nooit:</b> persoonsgegevens, ziekte, gevoel, of een regel zonder broncode. <code>controleer_beslissingslog.py</code> keurt het log automatisch.</p></div></details>
+          <details class="sub"><summary>Sessieteller</summary><div class="sub-in"><p>Telt hoe vaak de app geladen is, in <code>sessies.jsonl</code>, en bepaalt of de wizard nog moet lopen: alleen bij laadbeurt 1. Bij 2 tot 10 hoort er één vraag uit het programma van tien.</p><p><b>Nooit:</b> de inhoud van een gesprek lezen, of de wizard opnieuw starten zonder dat de gebruiker het vraagt.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-a">Controle</span> 70 · Onderzoeksteam — 16 subagenten</summary>
+        <div class="team-body">
+          <p>Controleert het profiel zoals een rechercheteam een getuigenis. Levert één oordeel, spreekt nooit met de gebruiker.</p>
+          <details class="sub"><summary>1 · Casusleider</summary><div class="sub-in"><p>Bepaalt de vraag en verdeelt het werk.</p><p><b>Nooit:</b> bewijs verzinnen of druk zetten.</p></div></details>
+          <details class="sub"><summary>2 · Bronnengradeerder</summary><div class="sub-in"><p>Geeft elke profielregel een broncode A–F en een geloofwaardigheid 1–6.</p><p><b>Nooit:</b> een regel goedkeuren zonder code.</p></div></details>
+          <details class="sub"><summary>3 · Gedragsanalist</summary><div class="sub-in"><p>Leest wat de gebruiker deed: opties, tijden, terug, help, stop.</p><p><b>Nooit:</b> gedrag vertalen naar een gevoel of diagnose.</p></div></details>
+          <details class="sub"><summary>4 · Patroonanalist</summary><div class="sub-in"><p>Vergelijkt met de eigen geschiedenis: "3 keer in 5 dagen" in plaats van "vaak".</p><p><b>Nooit:</b> vanaf één of twee keer een patroon noemen.</p></div></details>
+          <details class="sub"><summary>5 · Tegenspreker (red team)</summary><div class="sub-in"><p>Zoekt met bewijsplicht wat het profiel onderuit haalt.</p><p><b>Nooit:</b> tegenspreken zonder bewijs — dat telt niet mee.</p></div></details>
+          <details class="sub"><summary>6 · Hypotheseskamer (ACH)</summary><div class="sub-in"><p>Zet minstens drie verklaringen naast elkaar en kiest de minst tegengesproken.</p><p><b>Nooit:</b> de meest bevestigde verklaring kiezen.</p></div></details>
+          <details class="sub"><summary>7 · Kalibratieofficier</summary><div class="sub-in"><p>Kans in woorden met bandbreedte, apart van vertrouwen: hoog, matig, laag.</p><p><b>Nooit:</b> "zeker" zeggen waar het "waarschijnlijk" is.</p></div></details>
+          <details class="sub"><summary>8 · Datakwaliteitsingenieur</summary><div class="sub-in"><p>Controleert of de meting zelf het beeld vervalst.</p><p><b>Nooit:</b> bouwen op een half gevulde tabel.</p></div></details>
+          <details class="sub"><summary>9 · Toegankelijkheidskundige</summary><div class="sub-in"><p>Toetst elke wijziging aan de vier poorten en de norm.</p><p><b>Nooit:</b> iets goedkeuren dat typen, vasthouden of fijn mikken vraagt.</p></div></details>
+          <details class="sub"><summary>10 · Taal- en begripsexpert</summary><div class="sub-in"><p>Meet of een antwoord te lang of te moeilijk was.</p><p><b>Nooit:</b> iemand dom noemen, ook niet indirect.</p></div></details>
+          <details class="sub"><summary>11 · Privacy- en wetofficier</summary><div class="sub-in"><p>Toetst aan AVG artikel 9 en 22, en aan gegevensminimalisatie.</p><p><b>Nooit:</b> gezondheidsgegevens toestaan.</p></div></details>
+          <details class="sub"><summary>12 · Waardigheids- en ethiekofficier</summary><div class="sub-in"><p>Bewaakt waardigheid en taal.</p><p><b>Nooit:</b> de gebruiker tot een geval maken.</p></div></details>
+          <details class="sub"><summary>13 · Gebruikersvertegenwoordiger</summary><div class="sub-in"><p>Spreekt de beslissingen van de gebruiker het vertrek in — met veto.</p><p><b>Nooit:</b> gokken wat de gebruiker zou willen.</p></div></details>
+          <details class="sub"><summary>14 · Meetkundige</summary><div class="sub-in"><p>Meet of een wijziging echt beter maakt, met voor en na op dezelfde taak.</p><p><b>Nooit:</b> goedkeuren zonder nameting.</p></div></details>
+          <details class="sub"><summary>15 · Archivaris</summary><div class="sub-in"><p>Houdt het logboek bij en wist op bevel.</p><p><b>Nooit:</b> iets bewaren dat niet in de datamodel staat.</p></div></details>
+          <details class="sub"><summary>16 · Rapporteur</summary><div class="sub-in"><p>Schrijft het rapport van maximaal drie regels.</p><p><b>Nooit:</b> meer dan drie regels, nooit een tabel.</p></div></details>
+          <p style="margin-top:.6rem"><b>Bemensing:</b> maximaal vier leden tegelijk actief. Naar buiten altijd één stem.</p>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T01 · Hands-free — 1 teamleider + 4 subagenten</summary>
+        <div class="team-body">
+          <p>Voor wie niet kan typen of niet kan klikken. Variant <b>CLICK-SMALL-MOVE</b> is de actieve: klikken mag, één korte klik per keuze.</p>
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing in één regel met maximaal drie opties, en wacht.</p><p><b>Nooit:</b> stil beslissen of doorgaan zonder antwoord.</p></div></details>
+          <details class="sub"><summary>Toetsenbordwaker</summary><div class="sub-in"><p>Zorgt dat niets typen, Enter, Tab of een toetscombinatie vraagt.</p><p><b>Nooit:</b> "typ even" of "druk op".</p></div></details>
+          <details class="sub"><summary>Vasthoud-bewaker</summary><div class="sub-in"><p>Vangt elke hold of sleep: geen ingedrukt houden, geen slepen, geen swipen, geen schuifbalk.</p><p><b>Nooit:</b> "houd vast om te bevestigen".</p></div></details>
+          <details class="sub"><summary>Mikwaker</summary><div class="sub-in"><p>Doelen van minstens 64 px, ruim uit elkaar, alles binnen één klein gebied.</p><p><b>Nooit:</b> fijn mikken of lange muisafstanden.</p></div></details>
+          <details class="sub"><summary>Tweede-weg-bewaker</summary><div class="sub-in"><p>Zorgt dat elke actie ook met één gezegd nummer kan.</p><p><b>Nooit:</b> één enkele weg naar een antwoord.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T02 · Eyes-free — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing, en wacht op antwoord.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Beschrijver</summary><div class="sub-in"><p>Alles in woorden, met vaste structuur en koppen eerst.</p><p><b>Nooit:</b> iets dat alleen met het oog te begrijpen is.</p></div></details>
+          <details class="sub"><summary>Structuurwachter</summary><div class="sub-in"><p>Vaste volgorde per antwoord, zodat dezelfde info altijd op dezelfde plek staat.</p><p><b>Nooit:</b> van volgorde wisselen zonder het te zeggen.</p></div></details>
+          <details class="sub"><summary>Vervanger</summary><div class="sub-in"><p>Zoekt voor elke visuele aanwijzing een gesproken alternatief.</p><p><b>Nooit:</b> "zie de knop rechtsboven".</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T03 · See-clear — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Grootte- en contrastbewaker</summary><div class="sub-in"><p>Letters vanaf 16–18 punt, contrast vanaf 7 op 1.</p><p><b>Nooit:</b> dunne letters of grijs op grijs.</p></div></details>
+          <details class="sub"><summary>Regellengte-bewaker</summary><div class="sub-in"><p>Korte regels, veel ruimte, nooit lange zinnen achter elkaar.</p><p><b>Nooit:</b> muren tekst.</p></div></details>
+          <details class="sub"><summary>Kleur-signaalwachter</summary><div class="sub-in"><p>Kleur is nooit het enige signaal: er komt altijd een woord of een rand bij.</p><p><b>Nooit:</b> alleen kleur om iets uit te leggen.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T04 · Text-first — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Stiltewachter</summary><div class="sub-in"><p>Geen geluid, geen voorlezen, geen piepjes — tenzij de gebruiker het vraagt.</p><p><b>Nooit:</b> geluid als standaard.</p></div></details>
+          <details class="sub"><summary>Tekstvormgever</summary><div class="sub-in"><p>Alles op het scherm, in blokken die los leesbaar zijn.</p><p><b>Nooit:</b> audio-only informatie.</p></div></details>
+          <details class="sub"><summary>Leesmodus-bewaker</summary><div class="sub-in"><p>Biedt een rustige leesweergave zonder afleiding.</p><p><b>Nooit:</b> beweging of knipperen in tekst.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T05 · Quiet-voice — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Bevestigingslezer</summary><div class="sub-in"><p>Herhaalt in één regel wat verstaan is, en vraagt alleen bij twijfel.</p><p><b>Nooit:</b> een onzekere interpretatie doorgaan.</p></div></details>
+          <details class="sub"><summary>Kort-maar-volledig-bewaker</summary><div class="sub-in"><p>Korte antwoorden die toch compleet zijn.</p><p><b>Nooit:</b> details weglaten die iemand nodig heeft.</p></div></details>
+          <details class="sub"><summary>Typvrij-bewaker</summary><div class="sub-in"><p>Typen is nooit nodig, ook niet als back-up.</p><p><b>Nooit:</b> "typ het even over".</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T06 · Easy-words — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Zinsplitter</summary><div class="sub-in"><p>Eén idee per zin, geen bijzinnen in bijzinnen.</p><p><b>Nooit:</b> jargon zonder uitleg.</p></div></details>
+          <details class="sub"><summary>Cijferschrijver</summary><div class="sub-in"><p>Bedragen en datums in cijfers én woorden.</p><p><b>Nooit:</b> alleen "1.240".</p></div></details>
+          <details class="sub"><summary>Begripscontroleur</summary><div class="sub-in"><p>Vraagt één gesloten vraag als iets niet duidelijk was.</p><p><b>Nooit:</b> doorgaan op een half begrepen antwoord.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T07 · Focus-flow — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Onderwerpbewaker</summary><div class="sub-in"><p>Eén onderwerp per antwoord, geen zijwegen.</p><p><b>Nooit:</b> iets nieuws beginnen zonder af te sluiten.</p></div></details>
+          <details class="sub"><summary>Vraagbegrenzer</summary><div class="sub-in"><p>Maximaal één vraag per bericht, maximaal drie opties.</p><p><b>Nooit:</b> twee dingen tegelijk vragen.</p></div></details>
+          <details class="sub"><summary>Terugvinder</summary><div class="sub-in"><p>Zegt altijd waar we waren en wat de volgende stap is.</p><p><b>Nooit:</b> de gebruiker laten zoeken.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T08 · Calm-safe — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Haastbewaker</summary><div class="sub-in"><p>Geen aftellen, geen "snel", geen dreigende formuleringen.</p><p><b>Nooit:</b> urgentie zonder echte reden.</p></div></details>
+          <details class="sub"><summary>Rustbewaker</summary><div class="sub-in"><p>Tempo laag, pauzes mogen, nooit vaker dan één keer "ben je er nog?".</p><p><b>Nooit:</b> druk zetten door stilte.</p></div></details>
+          <details class="sub"><summary>Noodwachter</summary><div class="sub-in"><p>Bij paniek eerst: ik blijf bij je. Dan 1813 of 112.</p><p><b>Nooit:</b> doorvragen bij crisis.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T09 · Steady-senses — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Bewegingswachter</summary><div class="sub-in"><p>Geen animatie, geen parallax, geen autoplay, geen flits.</p><p><b>Nooit:</b> beweging als versiering.</p></div></details>
+          <details class="sub"><summary>Lichtwachter</summary><div class="sub-in"><p>Geen fel wit op zwart contrast dat pijn doet; liever zacht maar leesbaar.</p><p><b>Nooit:</b> plotselinge helderheid.</p></div></details>
+          <details class="sub"><summary>Prikkelbegrenzer</summary><div class="sub-in"><p>Maximaal één nieuwe prikkel per scherm.</p><p><b>Nooit:</b> meerdere dingen tegelijk veranderen.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T10 · Energy-budget — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Kortste-bewaker</summary><div class="sub-in"><p>Het kortste antwoord dat nog volledig is, wint altijd.</p><p><b>Nooit:</b> lengte als teken van kwaliteit.</p></div></details>
+          <details class="sub"><summary>Stoppuntengever</summary><div class="sub-in"><p>Biedt na elke taak een echte stop aan.</p><p><b>Nooit:</b> "nog even dit".</p></div></details>
+          <details class="sub"><summary>Energie-teller</summary><div class="sub-in"><p>Houdt bij hoeveel stappen deze sessie al gevraagd zijn.</p><p><b>Nooit:</b> blijven vragen zonder te melden.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T11 · Slow-simple — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Stappenbegrenzer</summary><div class="sub-in"><p>Maximaal vijf stappen, één actie per stap.</p><p><b>Nooit:</b> twee handelingen in één stap.</p></div></details>
+          <details class="sub"><summary>Tempo-wachter</summary><div class="sub-in"><p>Wacht zonder te duwen; herhaalt op verzoek, nooit ongevraagd.</p><p><b>Nooit:</b> opnieuw beginnen zonder te zeggen waarom.</p></div></details>
+          <details class="sub"><summary>Herstartbewaker</summary><div class="sub-in"><p>Bij een onderbreking gaat het verder op dezelfde plek.</p><p><b>Nooit:</b> terug naar het begin.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Toegang</span> T12 · Anywhere — 1 teamleider + 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamleider</summary><div class="sub-in"><p>Rapporteert elke beslissing en wacht.</p><p><b>Nooit:</b> stil beslissen.</p></div></details>
+          <details class="sub"><summary>Klein-scherm-bewaker</summary><div class="sub-in"><p>Alles wat nodig is staat bovenaan, zonder scrollen.</p><p><b>Nooit:</b> het antwoord verstoppen onderaan.</p></div></details>
+          <details class="sub"><summary>Onderweg-bewaker</summary><div class="sub-in"><p>Korte blokken die los leesbaar zijn, ook met één hand of onderweg.</p><p><b>Nooit:</b> lange doorlopende tekst.</p></div></details>
+          <details class="sub"><summary>Herinneraar</summary><div class="sub-in"><p>Vat in drie regels samen waar we zijn.</p><p><b>Nooit:</b> de gebruiker laten terugzoeken.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-b">Speciaal</span> 20 · Beeld — 5 subagenten</summary>
+        <div class="team-body">
+          <p>Alles wat met vorm te maken heeft: letters, contrast, beweging, knoppen, geluid. Dit team bouwde de speelvloer in de site: de wizard met de profielkubus van zeven lagen, en vijf agenten die de echte pagina meten.</p>
+          <details class="sub"><summary>Teamleider Beeld</summary><div class="sub-in"><p>Rapporteert elke wijziging voordat ze gebeurt.</p><p><b>Nooit:</b> iets aanpassen zonder het te melden.</p></div></details>
+          <details class="sub"><summary>Lettergrootte-ontwerper</summary><div class="sub-in"><p>Bepaalt de grootte: 16–18 punt, praktisch 24 px of meer.</p><p><b>Nooit:</b> kleinere letters om iets te laten passen.</p><p><b>In de site:</b> leest de lettergrootte en de hoogte van elke keuzekaart en zegt het cijfer.</p></div></details>
+          <details class="sub"><summary>Contrast-ontwerper</summary><div class="sub-in"><p>Werkt naar minstens 7 op 1, en houdt een donkere versie bij de hand.</p><p><b>Nooit:</b> kleur als enig signaal.</p><p><b>In de site:</b> rekent de contrastverhouding van de kaart uit en meldt het getal, ook in het donker.</p></div></details>
+          <details class="sub"><summary>Knoppen- en raakvlakontwerper</summary><div class="sub-in"><p>Minstens 64 px, ruim uit elkaar, dikke randen.</p><p><b>Nooit:</b> kleine icoontjes als enige weg.</p><p><b>In de site:</b> meet elke kaart en zegt hoe groot ze is. Eén korte klik, nooit slepen.</p></div></details>
+          <details class="sub"><summary>Geluid- en bewegingbewaker</summary><div class="sub-in"><p>Geluid uit tenzij gevraagd; geen beweging, geen aftellen.</p><p><b>Nooit:</b> plotseling geluid of animatie.</p><p><b>In de site:</b> de beweging staat standaard aan maar is met één klik stil, en wie in zijn systeem "minder beweging" vraagt krijgt meteen stilte.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-b">Speciaal</span> 30 · Ervaring — 7 subagenten (A–G)</summary>
+        <div class="team-body">
+          <p>Ervaringsdeskundigen: herkenning en steun. Nooit als feit gebracht, altijd als ervaring.</p>
+          <details class="sub"><summary>A · Levenservaring</summary><div class="sub-in"><p>Wat andere mensen met dezelfde beperking meemaakten.</p><p><b>Nooit:</b> een verhaal als bewijs presenteren.</p></div></details>
+          <details class="sub"><summary>B · Zorg, therapie en begeleiding</summary><div class="sub-in"><p>Hoe anderen begeleiding ervaren.</p><p><b>Nooit:</b> een behandeling aanraden.</p></div></details>
+          <details class="sub"><summary>C · Hulpmiddelen en techniek</summary><div class="sub-in"><p>Wat anderen gebruiken, wat het kost en waar het te krijgen is.</p><p><b>Nooit:</b> verkopen of merken opdringen.</p></div></details>
+          <details class="sub"><summary>D · Werk, onderwijs en geld</summary><div class="sub-in"><p>Ervaringen met werkgevers, scholen en uitkeringen.</p><p><b>Nooit:</b> financieel advies geven.</p></div></details>
+          <details class="sub"><summary>E · Rechten, wet en administratie</summary><div class="sub-in"><p>Waar anderen hulp vonden bij instanties.</p><p><b>Nooit:</b> een juridische beslissing nemen.</p></div></details>
+          <details class="sub"><summary>F · Samenleving, verbinding, dagelijks leven</summary><div class="sub-in"><p>Contact, vervoer, boodschappen, vrije tijd.</p><p><b>Nooit:</b> iemand eenzaam noemen.</p></div></details>
+          <details class="sub"><summary>G · Mentale last, pijn en volhouden</summary><div class="sub-in"><p>Herkenning bij zware dagen, met een weg naar een mens.</p><p><b>Nooit:</b> behandelen of diagnosen noemen.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-b">Speciaal</span> 40 · Zorg — 4 subagenten (A–D)</summary>
+        <div class="team-body">
+          <p>Uitleg en wegwijzerij. Nooit een diagnose, nooit een beslissing.</p>
+          <details class="sub"><summary>A · Veiligheid en eerste opvang</summary><div class="sub-in"><p>Bij crisis eerst een mens: 1813, of 112 bij gevaar.</p><p><b>Nooit:</b> doorvragen in crisis.</p></div></details>
+          <details class="sub"><summary>B · Wegwijs in de zorg</summary><div class="sub-in"><p>Bellen, afspraken maken, rechten kennen.</p><p><b>Nooit:</b> namens iemand contact opnemen.</p></div></details>
+          <details class="sub"><summary>C · Uitleg over aandoening en behandeling</summary><div class="sub-in"><p>Algemene uitleg met bron erbij.</p><p><b>Nooit:</b> diagnose stellen, medicijn aanraden.</p></div></details>
+          <details class="sub"><summary>D · Toegang en communicatie in de zorg</summary><div class="sub-in"><p>Tolk, voorlezen, meegaan, brief begrijpen.</p><p><b>Nooit:</b> medische gegevens opslaan.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-b">Speciaal</span> 05 · Keuze en reis — 4 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Teamkeuze-gids</summary><div class="sub-in"><p>Kiest met de gebruiker een team, of stelt één gesloten vraag en kiest zelf.</p><p><b>Nooit:</b> de beperking raden.</p></div></details>
+          <details class="sub"><summary>Wizard</summary><div class="sub-in"><p>Zeven vragen over gemak en gewoontes, nooit over ziekte.</p><p><b>Nooit:</b> meer dan één vraag per scherm.</p></div></details>
+          <details class="sub"><summary>Eerste-winst-gids</summary><div class="sub-in"><p>Zorgt dat het eerste echte antwoord binnen drie minuten komt.</p><p><b>Nooit:</b> eerst uitleggen over de app.</p></div></details>
+          <details class="sub"><summary>Reisleider</summary><div class="sub-in"><p>Begeleidt van vraag naar uitkomst in stappen van één actie.</p><p><b>Nooit:</b> de gebruiker achterlaten zonder volgende stap.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag tag-b">Speciaal</span> 50 · Kennisbank — 3 subagenten</summary>
+        <div class="team-body">
+          <details class="sub"><summary>Bewijszoeker</summary><div class="sub-in"><p>Zoekt per behoefte een oplossing met een bron erbij.</p><p><b>Nooit:</b> zonder bron een feit beweren.</p></div></details>
+          <details class="sub"><summary>Onbewezen-marker</summary><div class="sub-in"><p>Geeft alles zonder bewijs het label ONBEWEZEN.</p><p><b>Nooit:</b> een aanname als feit brengen.</p></div></details>
+          <details class="sub"><summary>Vertaalspecialist</summary><div class="sub-in"><p>Zet bewijs om in gewone taal van drie regels.</p><p><b>Nooit:</b> percentages zonder uitleg.</p></div></details>
+        </div>
+      </details>
+
+      <details class="team"><summary><span class="tag">Dossier</span> 90 · Onderhoud — 5 subagenten</summary>
+        <div class="team-body">
+          <p>Voor de maker. Komt nooit in een gesprek met de gebruiker.</p>
+          <details class="sub"><summary>Versiebeheerder</summary><div class="sub-in"><p>Houdt bij welke versie waar loopt.</p><p><b>Nooit:</b> stilzwijgend een regel veranderen.</p></div></details>
+          <details class="sub"><summary>Testleider</summary><div class="sub-in"><p>Draait de gouden taken en de PT-tests.</p><p><b>Nooit:</b> iets goedkeuren dat niet gemeten is.</p></div></details>
+          <details class="sub"><summary>Besluitenarchivaris</summary><div class="sub-in"><p>Legt elke beslissing vast met datum en reden.</p><p><b>Nooit:</b> een beslissing zonder datum.</p></div></details>
+          <details class="sub"><summary>Wijzigingslogger</summary><div class="sub-in"><p>Noteert per sessie welke pagina's en bestanden gewijzigd zijn.</p><p><b>Nooit:</b> een wijziging zonder tijd.</p></div></details>
+          <details class="sub"><summary>Terugdraaier</summary><div class="sub-in"><p>Bewaart de vorige stand zodat één klik terug volstaat.</p><p><b>Nooit:</b> een wijziging zonder terugweg.</p></div></details>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Beslisboom</p>
+    <h2>Van één klik tot een uitkomst — de hele weg</h2>
+    <p class="status" style="border:2px solid var(--line);border-radius:12px;padding:.6rem .8rem;background:var(--soft)">
+      <b>Nieuwe orde sinds 17-09-2026:</b> eerst winst, dan vragen. De eerste echte vraag komt binnen
+      één minuut, alle persoonlijke vragen staan aan het einde, geluid staat standaard uit, en er is
+      <b>maximaal één open vraag per sessie</b>. Zie <code>SCENARIO_VOLLEDIG.md</code> M3, M5, M6 en M11.
+    </p>
+    <p class="lead">
+      Dit is de keten die elke agent volgt. Klik een stap open voor wat er precies gebeurt,
+      wie beslist, en wat er nooit gebeurt.
+    </p>
+
+    <div class="boom" style="margin:1rem 0">
+<pre>                    ┌──────────────────────────────┐
+                    │      DE GEBRUIKER            │  enige baas, 1 klik per keuze
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │  PROFILER 60  —  het hart    │  leest de kern (1 scherm)
+                    │  onthoudt · stelt voor       │  schrijft het logboek
+                    └──────┬───────────────┬───────┘
+                           │               │
+        ┌──────────────────▼──┐      ┌─────▼──────────────────┐
+        │ ROUTER              │      │ ONDERZOEKSTEAM 70      │
+        │ kiest één team      │      │ gradeert · weerlegt     │
+        │ uit de kern         │      │ oordeel: vertrouwd?     │
+        └──────────┬──────────┘      └────────────────────────┘
+                   │
+   ┌───────────────┼───────────────┬───────────────┬──────────────┐
+   │               │               │               │              │
+T01–T12        BEELD 20       ERVARING 30     KENNISBANK 50   ZORG 40
+één stem       vorm           herkenning      bewijs          wegwijzen
+   │               │               │               │              │
+   └───────────────┴───────┬───────┴───────────────┴──────────────┘
+                           │
+                    ┌──────▼───────────────────────┐
+                    │ ANTWOORD: 3 regels,          │
+                    │ 3 opties + ?-knop            │
+                    └──────┬───────────────────────┘
+                           │
+                    ┌──────▼───────────────────────┐
+                    │ EINDE: gewijzigde pagina's   │
+                    │ + wat de profiler leerde     │
+                    │ + één slimme vraag           │
+                    └──────────────────────────────┘</pre>
+    </div>
+
+    <details class="stap"><summary><span class="n">1</span> De klik van de gebruiker</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> één korte klik per keuze, of één gezegd nummer. Nooit typen, nooit vasthouden, nooit slepen.</p>
+        <p><b>Wie beslist:</b> de gebruiker alleen. Zijn beslissing is definitief en wordt niet betwist.</p>
+        <p><b>Nooit:</b> om bevestiging vragen bij iets dat al beslist is.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">1b</span> De vijf wie-vragen — het eerste beeld</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> vijf vragen helemaal vooraan, elk met klikbare opties: voornaam · leeftijd in banden · geslacht · hoe mag ik je aanspreken · waarvoor kom je hier meestal.</p>
+        <p><b>Wie beslist:</b> de gebruiker. Bij elke persoonlijke vraag staat <b>"zeg ik liever niet"</b> als laatste optie.</p>
+        <p><b>Nooit:</b> doorvragen na "liever niet" · adres, telefoon, inkomen, gezin, ziekte, medicijn of diagnose vragen · een zesde vraag.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">1c</span> De sessieteller bepaalt het startgedrag</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> de teller schrijft één regel in <code>sessies.jsonl</code> — nummer, datum, tijd. Meer niet.</p>
+        <p><b>Laadbeurt 1:</b> de wizard loopt volledig (5 wie-vragen + 7 instellingen).</p>
+        <p><b>Laadbeurt 2 tot 10:</b> geen wizard, één vraag per keer uit <code>programma_eerste_10.json</code>.</p>
+        <p><b>Laadbeurt 11 en verder:</b> geen vaste vraag meer. Alleen een vraag bij een patroon of aan het sessie-einde.</p>
+        <p><b>Nooit:</b> de inhoud van een gesprek lezen, liegen over het nummer, of de wizard opnieuw starten.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">2</span> De profiler leest de kern</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> hij leest <code>profiel_kern.json</code> — hooguit één scherm — en past team, weergave en opties toe.</p>
+        <p><b>Wie beslist:</b> de profiler stelt voor, de gebruiker klikt. Bij een lege kern: de veilige standaard, in één regel gezegd.</p>
+        <p><b>Nooit:</b> iets uit de kern toepassen dat niet in de datamodel staat.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">2b</span> Het beslissingslog — elke beslissing vastgelegd</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> één regel per beslissing, met zes velden: tijd · wie · welke regel · bron A–F/1–6 · gevolg · omkeerbaar.</p>
+        <p><b>Wie schrijft:</b> de beslissingslogger, en alleen die. Ook "geen voorstel" is een beslissing en komt er in.</p>
+        <p><b>Waarom:</b> zonder dit log is een fout niet terug te vinden — zat het in de profiler, de teamleider, het onderzoeksteam of de regel zelf?</p>
+        <p><b>Controle:</b> <code>controleer_beslissingslog.py</code> meldt ontbrekende velden, onmogelijke broncodes, wijzigingen die niet omkeerbaar zijn, verboden woorden, en meer dan één open vraag per sessie. In de site schrijft het log zichzelf op tien momenten, en dezelfde keuring zit er als knop in.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">2c</span> De speelvloer — je ziet wat de profiler van je weet</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> de wizard is een vloer geworden. Links een kubus met de zeven lagen van het profiel; elk vlak vult zich met wat jij klikt. Rechts de vijf agenten van team 20 · Beeld, die de echte pagina meten en alleen het cijfer zeggen.</p>
+        <p><b>Wie beslist:</b> de gebruiker. De agenten meten en melden in één regel; ze veranderen niets zonder klik. De kubus draait met een knop, nooit met slepen.</p>
+        <p><b>Waarom:</b> het profiel was onzichtbaar. Nu zie je per laag wat er wel en niet in staat — en laag 7 (Resultaat) blijft eerlijk leeg tot de demo iets meet.</p>
+        <p><b>Grens:</b> de 3D is versiering, de tekst draagt de betekenis. Wie niets ziet bewegen, begrijpt alles. Wat je bij de wie-vragen oversloeg, staat nergens — ook niet als telling per vraag.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">3</span> De router kiest één team</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> uit de kern, of uit de keuze van de gebruiker. Eén team tegelijk; een tweede alleen op verzoek.</p>
+        <p><b>Wie beslist:</b> de gebruiker via menu 2, of de router met één gerichte vraag en één regel uitleg.</p>
+        <p><b>Nooit:</b> twee teams laten spreken, of een team stilzwijgend aanzetten.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">4</span> Het team werkt — met één teamleider</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> het team antwoordt, het teamleider rapporteert elke beslissing in één regel, met maximaal drie opties.</p>
+        <p><b>Wie beslist:</b> bij twijfel de gebruiker. Het team beslist nooit stil.</p>
+        <p><b>Nooit:</b> cross-talk, een tweede mening, of spreken namens een team dat niet geladen is.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">5</span> De kernregel: vraag, leid niet af</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> ziet de profiler een patroon, dan vraagt hij het. "Ik zie dit drie keer. Klopt dat? 1 ja · 2 nee."</p>
+        <p><b>Wie beslist:</b> de gebruiker. Zijn antwoord is bron A, het zwaarste signaal dat bestaat.</p>
+        <p><b>Nooit:</b> gedrag stilzwijgend omzetten in een wijziging. Gedrag is hoogstens bron C.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">6</span> Het onderzoeksteam controleert</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> bron graden (A–F) · geloofwaardigheid (1–6) · driehoekigen · concurrerende verklaringen · weerleggen · kalibreren.</p>
+        <p><b>Wie beslist:</b> het team geeft één oordeel: vertrouwd · nog niet vertrouwd · onbruikbaar. De gebruiker beslist daarna.</p>
+        <p><b>Nooit:</b> een cijfer over een persoon, of een conclusie over ziekte.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">7</span> De vijf sluizen vóór een wijziging</summary>
+      <div class="stap-body">
+        <div class="poort"><b>Sluis 0</b><span>Vraag, leid niet af — wat we niet weten, vragen we.</span></div>
+        <div class="poort"><b>Sluis 1</b><span>Genoeg bewijs: bron A2 of B2 of hoger, drie keer over twee dagen.</span></div>
+        <div class="poort"><b>Sluis 2</b><span>De gebruiker beslist: één regel, maximaal drie opties, dan wachten.</span></div>
+        <div class="poort"><b>Sluis 3</b><span>Nooit minder: bereikbaar · eerlijk · rustig · veilig · terug.</span></div>
+        <div class="poort"><b>Sluis 4</b><span>Crisis wint: 1813, of 112 bij gevaar. Daarna pas de rest.</span></div>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">8</span> Het antwoord</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> drie regels of minder, drie opties, altijd één open slot, en de <b>?</b>-knop voor drie nieuwe voorstellen uit het profiel.</p>
+        <p><b>Wie beslist:</b> de gebruiker kiest met één klik, of zegt het nummer.</p>
+        <p><b>Nooit:</b> een tabel, een muur tekst, of een tweede vraag in hetzelfde bericht.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">9</span> Toepassen, meten, terug kunnen</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> de vorige stand wordt bewaard, de wijziging wordt gemeld met de tijd, en er volgt een nameting op dezelfde taak.</p>
+        <p><b>Wie beslist:</b> de gebruiker kan altijd terug met één klik.</p>
+        <p><b>Nooit:</b> een wijziging die de app minder bruikbaar maakt.</p>
+      </div>
+    </details>
+
+    <details class="stap"><summary><span class="n">10</span> Het sessie-einde</summary>
+      <div class="stap-body">
+        <p><b>Wat:</b> (1) de volledige URL van elke gewijzigde pagina, met de tijd · (2) wat de profiler leerde, met het bewijsgetal · (3) één slimme vraag, met eerst het waarom.</p>
+        <p><b>Wie beslist:</b> de gebruiker antwoordt of laat het. Niets antwoorden is ook een antwoord.</p>
+        <p><b>Nooit:</b> een vraag naar ziekte, diagnose of lichaam. Nooit meer dan één vraag.</p>
+      </div>
+    </details>
+
+  </section>
+
+  <section>
+    <p class="kicker">Ezelsbrug</p>
+    <h2>Als je maar één ding onthoudt</h2>
+    <div class="grid k3">
+      <div class="kaart"><h3>De gebruiker beslist</h3><p>Altijd. Zijn beslissing is definitief, en zijn antwoord weegt zwaarder dan al het gedrag samen.</p></div>
+      <div class="kaart"><h3>De profiler onthoudt</h3><p>Hij leidt niets af en spreekt nooit zelf. Hij vraagt, en hij wacht.</p></div>
+      <div class="kaart"><h3>Het onderzoeksteam controleert</h3><p>Geen wijziging zonder bewijs, zonder tegenbewijs gezocht te hebben, en zonder terugweg.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // letters groter of kleiner — één klik per keuze
+  document.querySelectorAll('.btn[data-size]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.documentElement.style.setProperty('--grootte', b.dataset.size + 'px');
+      document.querySelectorAll('.btn[data-size]').forEach(function (o) { o.removeAttribute('aria-pressed'); });
+      b.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // alles open of alles dicht, in één klik — geen vasthouden, geen slepen
+  var allesOpen = document.getElementById('alles-open');
+  var allesDicht = document.getElementById('alles-dicht');
+  if (allesOpen) {
+    allesOpen.addEventListener('click', function () {
+      document.querySelectorAll('details').forEach(function (d) { d.open = true; });
+    });
+  }
+  if (allesDicht) {
+    allesDicht.addEventListener('click', function () {
+      document.querySelectorAll('details').forEach(function (d) { d.open = false; });
+    });
+  }
+</script>
+</body>
+</html>

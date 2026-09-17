@@ -1,0 +1,49 @@
+name: Keuring van de site
+
+# Deze keuring is de webhook die geen server nodig heeft.
+# GitHub meldt het zelf: bij elke push naar main draait de keuring, en faalt ze,
+# dan krijgt de eigenaar een mailtje en staat er een rood kruis bij de push.
+# Het verslag komt ook onderaan de keuringspagina te staan, in gewone taal.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keuring:
+    name: Toegankelijkheid en geen persoonsgegevens
+    runs-on: ubuntu-latest
+    steps:
+      - name: De bestanden ophalen
+        uses: actions/checkout@v4
+
+      - name: Python klaarzetten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: De site keuren
+        run: |
+          set -o pipefail
+          python3 controleer_site.py | tee keuring-verslag.txt
+
+      - name: Het verslag op de keuringspagina zetten
+        if: always()
+        run: |
+          echo "## Uitslag van de keuring" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat keuring-verslag.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Het verslag bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keuring-verslag
+          path: keuring-verslag.txt

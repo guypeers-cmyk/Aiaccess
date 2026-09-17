@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat — grote letters, geen typen nodig</title>
+<style>
+/* ============================================================
+   Zelfde opzet als chat-accessibility.css, hier inline
+   zodat je het direct kan bekijken.
+   ============================================================ */
+:root{
+  --a11y-font-size: 24px;
+  --a11y-line-height: 1.7;
+  --a11y-letter-spacing: 0.02em;
+  --a11y-word-spacing: 0.08em;
+  --a11y-measure: 60ch;
+  --a11y-ink:#141414;
+  --a11y-paper:#fbfbf9;
+  --a11y-soft:#f0f0ee;
+  --a11y-line:#6b6b6b;
+  --a11y-accent:#0b3d91;
+  --a11y-space:1.4rem;
+  --a11y-radius:12px;
+  --a11y-target:64px;
+  --a11y-focus:5px;
+}
+*{box-sizing:border-box}
+html{font-size:100%}
+body{
+  margin:0;
+  background:var(--a11y-paper);
+  color:var(--a11y-ink);
+  font-family:Verdana,Tahoma,"Segoe UI",system-ui,Arial,sans-serif;
+  font-size:var(--a11y-font-size);
+  line-height:var(--a11y-line-height);
+  letter-spacing:var(--a11y-letter-spacing);
+  word-spacing:var(--a11y-word-spacing);
+  text-align:left;
+}
+.wrap{max-width:var(--a11y-measure);margin:0 auto;padding:calc(var(--a11y-space)*1.2) var(--a11y-space)}
+
+/* hulpmiddel: grootte kiezen */
+.sizer{
+  border:4px solid var(--a11y-ink);
+  border-radius:var(--a11y-radius);
+  background:#fff;
+  padding:var(--a11y-space);
+  margin-bottom:calc(var(--a11y-space)*1.4);
+}
+.sizer h2{margin:0 0 .8rem;font-size:1em;color:var(--a11y-accent);text-transform:uppercase;letter-spacing:.08em}
+.sizer-buttons{display:grid;gap:.8rem}
+.sizer button{
+  min-height:var(--a11y-target);
+  width:100%;
+  font:inherit;font-weight:700;
+  color:var(--a11y-ink);background:#fff;
+  border:4px solid var(--a11y-ink);border-radius:var(--a11y-radius);
+}
+
+/* berichten */
+.msg{
+  display:block;width:100%;
+  margin:0 0 calc(var(--a11y-space)*1.6);
+  padding:var(--a11y-space);
+  background:#fff;
+  border:3px solid var(--a11y-line);
+  border-radius:var(--a11y-radius);
+}
+.msg::before{
+  display:block;margin-bottom:.6rem;
+  font-size:.8em;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--a11y-accent);
+}
+.msg.agent::before{content:"ASSISTENT"}
+.msg.user{background:var(--a11y-soft);border-style:dashed}
+.msg.user::before{content:"JIJ ZEI"}
+
+/* opties */
+.options{list-style:none;margin:calc(var(--a11y-space)*1.4) 0 0;padding:0;display:grid;gap:calc(var(--a11y-space)*.8)}
+.options li{
+  display:flex;align-items:center;gap:.9rem;
+  min-height:var(--a11y-target);
+  padding:1rem 1.2rem;
+  background:#fff;color:var(--a11y-ink);
+  border:4px solid var(--a11y-ink);border-radius:var(--a11y-radius);
+  font-weight:700;
+}
+.num{min-width:2.2em;text-align:center;font-size:1.15em;font-weight:800;color:var(--a11y-accent)}
+
+/* een link */
+a{color:var(--a11y-accent);text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:2px}
+
+/* tabel wordt lijst */
+dl{margin:var(--a11y-space) 0 0;padding:var(--a11y-space);border:3px solid var(--a11y-line);border-radius:var(--a11y-radius);background:#fff}
+dt{font-weight:700;color:var(--a11y-accent)}
+dd{margin:.2rem 0 1rem}
+
+/* nooit bewegen */
+*,*::before,*::after{animation:none!important;transition:none!important}
+*:focus-visible{outline:var(--a11y-focus) solid #b30000;outline-offset:4px}
+
+@media (prefers-color-scheme:dark){
+  :root{--a11y-ink:#f4f4f1;--a11y-paper:#121212;--a11y-soft:#1e1e1e;--a11y-line:#b9b9b9;--a11y-accent:#ffd84d}
+  .msg,.options li,.sizer{background:#181818}
+  .sizer button{background:#181818;color:var(--a11y-ink)}
+}
+/* de twee keermenu's bij de start: uitklappen met één klik */
+.menu{border:4px solid var(--a11y-ink);border-radius:var(--a11y-radius);background:#fff;margin:0 0 1rem;padding:.4rem}
+.menu>summary{cursor:pointer;font-weight:800;font-size:1.05em;min-height:var(--a11y-target);
+  display:flex;align-items:center;gap:.7rem;padding:.6rem .9rem;border-radius:var(--a11y-radius);list-style:none}
+.menu>summary::-webkit-details-marker{display:none}
+.menu>summary::before{content:"\25B8";font-weight:800}
+.menu[open]>summary::before{content:"\25BE"}
+.menu-items{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.6rem}
+.menu-items li{display:flex;align-items:center;gap:.9rem;min-height:var(--a11y-target);
+  padding:.7rem .9rem;border:3px solid var(--a11y-line);border-radius:var(--a11y-radius);
+  font-weight:700;cursor:pointer;user-select:none;touch-action:manipulation}
+.menu-items li:hover,.menu-items li:focus-visible{border-width:5px}
+.menu-items li[aria-selected="true"]{border-style:double;border-width:7px}
+.menu-items .sub{margin:.3rem 0 0;border:3px dashed var(--a11y-line);border-radius:var(--a11y-radius);padding:.5rem}
+.menu-status{margin:.8rem 0 0;font-weight:700}
+.menu-note{margin:.6rem 0 0}
+details.menu *{animation:none!important;transition:none!important}
+.options li{cursor:pointer;user-select:none;touch-action:manipulation}
+.options li:hover,.options li:focus-visible{border-width:6px}
+.options li[aria-selected="true"]{border-style:double;border-width:8px}
+.keuze-status{margin:1rem 0 0;font-weight:700}
+.sizer button[aria-pressed="true"]{border-style:double;border-width:8px}
+html[data-donker="ja"]{--a11y-ink:#f4f4f1;--a11y-paper:#121212;--a11y-soft:#1e1e1e;--a11y-line:#c8c8c8;--a11y-accent:#ffd84d}
+html[data-donker="ja"] .msg,html[data-donker="ja"] .options li,html[data-donker="ja"] .sizer,html[data-donker="ja"] .menu,html[data-donker="ja"] .menu-items li{background:#181818;color:var(--a11y-ink)}
+@media (max-width:480px){.wrap{padding:var(--a11y-space) .9rem}}
+
+/* ============================================================
+   DE DIEPER-KNOP (?) — één klik, nooit vasthouden
+   ============================================================ */
+.btn-dieper{
+  display:flex; align-items:center; gap:0.8rem;
+  width:100%; min-height:var(--a11y-target);
+  margin:0.8rem 0 0 0; padding:0.8rem 1rem;
+  font:inherit; font-weight:800; text-align:left;
+  color:var(--a11y-ink); background:#ffffff;
+  border:4px dashed var(--a11y-ink); border-radius:var(--a11y-radius);
+  cursor:pointer;
+}
+.btn-dieper:hover,.btn-dieper:focus-visible{background:var(--a11y-soft); outline:4px solid var(--a11y-ink); outline-offset:2px;}
+.btn-dieper[aria-expanded="true"]{border-style:solid;}
+.vraagteken{
+  display:inline-flex; align-items:center; justify-content:center;
+  flex:0 0 auto; width:2.2em; height:2.2em;
+  border-radius:50%; border:3px solid var(--a11y-ink); font-weight:900;
+}
+.dieper-blok{margin-top:0.8rem; padding:0.8rem 1rem; border:4px solid var(--a11y-ink); border-radius:var(--a11y-radius); background:#ffffff;}
+.dieper-blok[hidden]{display:none;}
+.dieper-vraag{margin:0 0 0.6rem; font-weight:700;}
+.knop-wis{display:flex;align-items:center;justify-content:center;min-height:var(--a11y-target);width:100%;
+  margin:0.8rem 0 0;font:inherit;font-weight:800;color:var(--a11y-ink);background:#fff;
+  border:4px solid var(--a11y-ink);border-radius:var(--a11y-radius);cursor:pointer}
+.knop-wis:hover,.knop-wis:focus-visible{background:var(--a11y-soft);outline:4px solid var(--a11y-ink);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <details class="menu" id="menu-beeld">
+    <summary>▸ MENU 1 — BEELD (wat wil je aanpassen?)</summary>
+    <ul class="menu-items" data-menu="beeld">
+      <li data-actie="letters">1 — Letters groter of kleiner</li>
+      <li data-actie="contrast">2 — Contrast: donker op licht of licht op donker</li>
+      <li data-actie="regels">3 — Kortere regels, meer ruimte tussen de regels</li>
+      <li data-actie="structuur">4 — Structuur: koppen eerst, tabellen als lijsten</li>
+      <li data-actie="beweging">5 — Beweging uit: geen animatie, geen aftellen</li>
+      <li data-actie="knoppen">6 — Knoppen groter, dikkere rand</li>
+      <li data-actie="kleur">7 — Kleur nooit als enige signaal</li>
+      <li data-actie="geluid">8 — Geluid: 1 aan · 2 uit</li>
+      <li data-actie="scherm">9 — Alles op één scherm, geen scrollen</li>
+      <li data-actie="taal">10 — Taal en woorden: korter, cijfers in woorden</li>
+      <li data-actie="weetniet">11 — Ik weet het niet → kies de veilige standaard</li>
+      <li data-actie="echt">12 — Zet het echt door (CSS + hulp van iemand)</li>
+    </ul>
+    <p class="menu-status" id="status-beeld">Nog niets gekozen. Klik één nummer.</p>
+  </details>
+
+  <details class="menu" id="menu-team">
+    <summary>▸ MENU 2 — WIE HELPT JOU (kies één groep)</summary>
+    <ul class="menu-items" data-menu="team">
+      <li data-team="1">1 — TOEGANGSTEAMS (12)</li>
+      <li data-sub="toegang">
+        <details class="sub"><summary>Bekijk de 12 teams</summary>
+          <ul class="menu-items">
+            <li data-team="HANDS-FREE">1 HANDS-FREE — ik kan niet typen of klikken</li>
+            <li data-team="EYES-FREE">2 EYES-FREE — ik kan niet kijken naar het scherm</li>
+            <li data-team="SEE-CLEAR">3 SEE-CLEAR — ik zie slecht, alles moet groot</li>
+            <li data-team="TEXT-FIRST">4 TEXT-FIRST — geen geluid, alles in tekst</li>
+            <li data-team="QUIET-VOICE">5 QUIET-VOICE — mijn stem wordt niet verstaan</li>
+            <li data-team="EASY-WORDS">6 EASY-WORDS — korte, eenvoudige taal</li>
+            <li data-team="FOCUS-FLOW">7 FOCUS-FLOW — ik raak snel afgeleid</li>
+            <li data-team="CALM-SAFE">8 CALM-SAFE — ik word snel angstig of overweldigd</li>
+            <li data-team="STEADY-SENSES">9 STEADY-SENSES — beweging en licht doen mij pijn</li>
+            <li data-team="ENERGY-BUDGET">10 ENERGY-BUDGET — ik heb heel weinig energie</li>
+            <li data-team="SLOW-SIMPLE">11 SLOW-SIMPLE — langzaam en stap voor stap</li>
+            <li data-team="ANYWHERE">12 ANYWHERE — ik lees op een klein scherm of onderweg</li>
+          </ul>
+        </details>
+      </li>
+      <li data-team="2">2 — ERVARINGSDESKUNDIGEN (7 groepen)</li>
+      <li data-sub="ervaring">
+        <details class="sub"><summary>Bekijk de 7 groepen</summary>
+          <ul class="menu-items">
+            <li data-team="A">A — levenservaring</li>
+            <li data-team="B">B — zorg, therapie en begeleiding</li>
+            <li data-team="C">C — hulpmiddelen en techniek</li>
+            <li data-team="D">D — werk, onderwijs en geld</li>
+            <li data-team="E">E — rechten, wet en administratie</li>
+            <li data-team="F">F — samenleving, verbinding en dagelijks leven</li>
+            <li data-team="G">G — mentale last, pijn en volhouden</li>
+          </ul>
+        </details>
+      </li>
+      <li data-team="3">3 — ZORG EN GEZONDHEID (4 groepen)</li>
+      <li data-sub="zorg">
+        <details class="sub"><summary>Bekijk de 4 groepen</summary>
+          <ul class="menu-items">
+            <li data-team="ZA">A — veiligheid en eerste opvang</li>
+            <li data-team="ZB">B — wegwijs in de zorg (bellen, afspraken, rechten)</li>
+            <li data-team="ZC">C — uitleg over aandoening en behandeling (geen diagnose)</li>
+            <li data-team="ZD">D — toegang en communicatie in de zorg</li>
+          </ul>
+        </details>
+      </li>
+      <li data-team="4">4 — BEELD EN WEERGAVE (opent menu 1)</li>
+      <li data-team="5">5 — IK WEET HET NIET → ik stel één vraag en kies voor jou</li>
+    </ul>
+    <p class="menu-status" id="status-team">Nog geen groep gekozen. Klik één groep.</p>
+  </details>
+
+  <div class="sizer">
+    <h2>Grootte van de letters</h2>
+    <p style="margin:0 0 1rem"><strong>Zo begint elke sessie in de chat:</strong> twee uitklapmenu's hierboven — één klik opent ze, één klik kiest. Je hoeft nooit te typen.<br><br>Druk zelf op een knop. <strong>Klikken mag.</strong> Eén klik is genoeg. Lukt klikken vandaag niet, zeg dan gewoon <strong>24</strong> of laat iemand klikken.</p>
+    <div class="sizer-buttons">
+      <button type="button" data-size="20">Normaal — 20</button>
+      <button type="button" data-size="24">Groot — 24</button>
+      <button type="button" data-size="28">Heel groot — 28</button>
+      <button type="button" data-size="32">Extra groot — 32</button>
+    </div>
+  </div>
+
+  <div class="msg agent">
+    Klaar. Ik pas me aan jou aan.
+    <br><br>
+    Je hoeft niets te typen. Antwoord met één nummer.
+    <br>
+    Grote letters. Korte regels. Ik lees niets voor.
+  </div>
+
+  <div class="msg user">Twee</div>
+
+  <div class="msg agent voorstel">
+    Goed. Dan lees ik je vraag voor naar mij toe en geef ik je drie keuzes.
+    <br><br>
+    Zeg of laat zeggen: <strong>een</strong>, <strong>twee</strong>, <strong>drie</strong> of <strong>vier</strong>.
+
+    <ul class="options" id="keuzes">
+      <li data-keuze="1"><span class="num">1</span> Korter antwoorden</li>
+      <li data-keuze="2"><span class="num">2</span> Grotere letters</li>
+      <li data-keuze="3"><span class="num">3</span> Rustiger tempo, minder op één scherm</li>
+    </ul>
+    <p class="keuze-status" id="keuze-status">Nog niets gekozen. Klik op een nummer, of zeg het nummer.</p>
+
+    <!-- De dieper-optie: bij ELK voorstel een echte knop met een ? -->
+    <button type="button" class="btn-dieper" aria-expanded="false">
+      <span class="vraagteken" aria-hidden="true">?</span>
+      3 nieuwe voorstellen op basis van jouw profiel
+    </button>
+
+    <div class="dieper-blok" hidden>
+      <p class="dieper-vraag"><strong>Drie andere voorstellen:</strong> klik er één.</p>
+      <ul class="options dieper-keuzes"></ul>
+      <p class="keuze-status dieper-status">Nog niets gekozen.</p>
+    </div>
+  </div>
+
+  <div class="msg user">Eén</div>
+
+  <div class="msg agent voorstel">
+    Groter, gedaan. En zo ziet élk voorstel eruit vanaf nu: drie suggesties, en daaronder de ?-knop.
+    <ul class="options">
+      <li data-vb="1"><span class="num">1</span> Alles groter zetten</li>
+      <li data-vb="2"><span class="num">2</span> Donkere letters op licht</li>
+      <li data-vb="3"><span class="num">3</span> Alleen het antwoord, niets eromheen</li>
+    </ul>
+    <p class="keuze-status vb-status">Nog niets gekozen. Klik op een nummer.</p>
+    <button type="button" class="btn-dieper" aria-expanded="false">
+      <span class="vraagteken" aria-hidden="true">?</span>
+      Dieper op één van deze
+    </button>
+    <div class="dieper-blok" hidden>
+      <p class="dieper-vraag"><strong>Drie andere voorstellen:</strong> klik er één.</p>
+      <ul class="options dieper-keuzes"></ul>
+      <p class="keuze-status dieper-status">Nog niets gekozen.</p>
+    </div>
+  </div>
+
+  <div class="msg user">Drie</div>
+
+  <div class="msg agent">
+    Dus je kiest drie: alleen het antwoord, niets eromheen.
+    <br><br>
+    Als iets niet lukt, zeg je gewoon <strong>help</strong>. Dan vraag ik het opnieuw, met minder woorden.
+    <br><br>
+    Wil je een cijferblok in plaats van een tabel? Dat ziet er zo uit:
+
+    <dl>
+      <dt>Bedrag</dt>
+      <dd>1.240 euro — duizend tweehonderd veertig euro</dd>
+      <dt>Datum</dt>
+      <dd>12 september 2026 — zaterdag</dd>
+      <dt>Wat je moet doen</dt>
+      <dd>Eén formulier invullen</dd>
+      <dt>Tot wanneer</dt>
+      <dd>30 september 2026</dd>
+    </dl>
+  </div>
+
+  <div class="msg agent">
+    <h2 style="margin:0 0 .4em">Logboek van deze oefening</h2>
+    <p style="margin:0 0 .6em">Alles wat je hier klikt komt hieronder, met de seconden sinds je vorige klik. Alleen keuzes: geen naam, geen ziekte, geen oordeel.</p>
+    <pre id="logboek-tekst" style="white-space:pre-wrap;margin:0 0 .6em;font:inherit;font-size:.85em">Nog niets geklikt.</pre>
+    <p class="keuze-status" id="logboek-oordeel">De profiler zegt nog niets: er zijn nog geen drie kliks.</p>
+    <button type="button" class="knop-wis" id="wis-logboek">Wis het logboek</button>
+    <p style="margin:.4em 0 0;font-size:.85em">Eén klik. Je hoeft niets vast te houden en niets te slepen.</p>
+  </div>
+
+</div>
+
+<script>
+  // LOGBOEK: elke klik erbij, met de seconden sinds de vorige klik.
+  var logRegels = [];
+  var laatsteKlik = Date.now();
+  function logKlik(onderwerp, nummer, tekst) {
+    var nu = Date.now();
+    var sec = Math.round((nu - laatsteKlik) / 1000);
+    laatsteKlik = nu;
+    var signaal = sec >= 45 ? 'zeer traag' : (sec >= 20 ? 'traag' : null);
+    logRegels.push({ ts: new Date().toISOString().slice(0,19), onderwerp: onderwerp, keuze_nr: nummer, keuze: tekst, seconden: sec, signaal: signaal });
+    toonLog();
+  }
+  function toonLog() {
+    var pre = document.getElementById('logboek-tekst');
+    if (!pre) { return; }
+    if (!logRegels.length) { pre.textContent = 'Nog niets geklikt.'; } else {
+      pre.textContent = logRegels.map(function (r) {
+        return r.ts.replace('T',' ') + ' · ' + r.onderwerp + ' · keuze ' + r.keuze_nr + ' (' + r.keuze + ') · ' + r.seconden + ' s' + (r.signaal ? ' · ' + r.signaal : '');
+      }).join('\n');
+    }
+    oordeelLog();
+  }
+  function oordeelLog() {
+    var el = document.getElementById('logboek-oordeel');
+    if (!el) { return; }
+    var traag = logRegels.filter(function (r) { return r.signaal; }).length;
+    if (logRegels.length < 3) { el.textContent = 'De profiler zegt nog niets: minder dan drie kliks.'; return; }
+    if (traag >= 3) {
+      el.textContent = 'WAARSCHIJNLIJK: je twijfelde drie keer of vaker langer dan 20 seconden. Ik doe dan 3 opties in plaats van 4, en zet het antwoord bovenaan.';
+    } else {
+      el.textContent = 'Nog geen patroon: ' + logRegels.length + ' kliks, waarvan ' + traag + ' traag. Onder drie dezelfde blijft de profiler stil.';
+    }
+  }
+  var wisKnop = document.getElementById('wis-logboek');
+  if (wisKnop) { wisKnop.addEventListener('click', function () { logRegels = []; laatsteKlik = Date.now(); toonLog(); }); }
+
+  document.querySelectorAll('.sizer button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.documentElement.style.setProperty('--a11y-font-size', b.dataset.size + 'px');
+      document.querySelectorAll('.sizer button').forEach(function (o) { o.removeAttribute('aria-pressed'); });
+      b.setAttribute('aria-pressed', 'true');
+    });
+  });
+
+  // De twee keermenu's: één klik opent, één klik kiest. Nooit vasthouden, nooit slepen.
+  var root = document.documentElement;
+  function zetStatus(id, tekst) { document.getElementById(id).textContent = tekst; }
+  function kies(li) {
+    var lijst = li.closest('.menu-items');
+    if (lijst) { lijst.querySelectorAll(':scope > li').forEach(function (o) { o.removeAttribute('aria-selected'); }); }
+    li.setAttribute('aria-selected', 'true');
+  }
+  var beeldActies = {
+    letters:    function () { var nu = parseInt(getComputedStyle(root).getPropertyValue('--a11y-font-size')) || 24;
+                              var volgende = nu >= 32 ? 20 : nu + 4;
+                              root.style.setProperty('--a11y-font-size', volgende + 'px');
+                              return 'Letters zijn nu ' + volgende + ' px. Zeg of klik 1 om nog groter te maken.'; },
+    contrast:   function () { var donker = root.getAttribute('data-donker') === 'ja';
+                              root.setAttribute('data-donker', donker ? 'nee' : 'ja');
+                              return donker ? 'Contrast: donkere letters op licht. Woorden en randen dragen de betekenis, niet alleen kleur.'
+                                            : 'Contrast: lichte letters op donker. Sommige slechtzienden lezen hier 10 tot 50 procent sneller.'; },
+    regels:     function () { return 'Regels zijn korter en er is meer ruimte. Eén idee per regel.'; },
+    structuur:  function () { return 'Structuur: koppen eerst, tabellen worden lijsten. Ik begin altijd met het belangrijkste.'; },
+    beweging:   function () { return 'Beweging staat uit. Geen animatie, geen knipperen, geen aftellen.'; },
+    knoppen:    function () { root.style.setProperty('--a11y-target','84px'); return 'Knoppen zijn nu minimaal 84 px. Eén klik per keuze.'; },
+    kleur:      function () { return 'Kleur is nooit het enige signaal: er komt altijd een woord of een rand bij.'; },
+    geluid:     function () { return 'Geluid staat nu UIT. Wil je het aan? Klik 1 aan · 2 uit — bij aan lees ik de eerste 3 regels voor en vraag ik \u201cverder?\u201d.'; },
+    scherm:     function () { return 'Alles wat je nodig hebt staat dicht bij elkaar. Je hoeft niet te scrollen om je antwoord te vinden.'; },
+    taal:       function () { return 'Kortere zinnen, geen jargon, en bedragen in cijfers én woorden.'; },
+    weetniet:   function () { root.style.setProperty('--a11y-font-size','28px'); root.style.setProperty('--a11y-target','84px');
+                              return 'Ik kies de veilige standaard: groter, rustiger, korter. Je kan altijd iets veranderen — zeg of klik "menu".'; },
+    echt:       function () { return 'Dan lever ik het bestand chat-accessibility.css en één alinea voor je helper. Jij hoeft niets te installeren.'; }
+  };
+  document.querySelectorAll('.menu-items li[data-actie]').forEach(function (li) {
+    li.setAttribute('tabindex','0'); li.setAttribute('role','button');
+    function doe() { kies(li); zetStatus('status-beeld', beeldActies[li.dataset.actie]());
+      var wt = li.textContent.trim();
+      logKlik('menu 1 beeld', wt.substring(0,3).trim(), wt.substring(3).replace(/^\s*[^0-9A-Za-z]+\s*/, '').trim()); }
+    li.addEventListener('click', function (e) { if (e.target.closest('.menu-items li') !== li) { return; } doe(); });
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doe(); } });
+  });
+  document.querySelectorAll('.menu-items li[data-team]').forEach(function (li) {
+    li.setAttribute('tabindex','0'); li.setAttribute('role','button');
+    function doe() {
+      if (li.dataset.team === '4') {
+        var m = document.getElementById('menu-beeld'); m.open = true; m.scrollIntoView({block:'nearest'});
+        zetStatus('status-team','Beeld en weergave: menu 1 staat open bovenaan.'); return;
+      }
+      kies(li);
+      var t = li.textContent.trim();
+      logKlik('menu 2 team', t.substring(0,3).trim(), t.substring(3).replace(/^\s*[^0-9A-Za-z]+\s*/, '').trim());
+      if (li.dataset.team === '5') {
+        zetStatus('status-team','Eén gerichte vraag: waar kost het je vandaag het meest moeite? 1 klikken · 2 lezen · 3 begrijpen · 4 iets anders. Daarna kies ik het team.');
+        return;
+      }
+      zetStatus('status-team','Gekozen: ' + t + '. Vanaf nu antwoordt alleen deze groep. De basisregels blijven aan. Zeg of klik "menu" om te wisselen.');
+    }
+    li.addEventListener('click', doe);
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doe(); } });
+  });
+
+  // Een klik is een volledig antwoord: kiezen én bevestigen in één beweging.
+  document.querySelectorAll('#keuzes li[data-keuze]').forEach(function (li) {
+    li.setAttribute('tabindex', '0');
+    li.setAttribute('role', 'button');
+    function kies() {
+      document.querySelectorAll('#keuzes li').forEach(function (o) { o.removeAttribute('aria-selected'); });
+      li.setAttribute('aria-selected', 'true');
+      var num = li.dataset.keuze;
+      var tekst = li.textContent.replace(num, '').trim();
+      logKlik('voorstel', num, tekst);
+      document.getElementById('keuze-status').textContent = 'Je koos ' + num + ' — ' + tekst + '. Klopt dat? 1 ja · 2 nee';
+      if (num === '3') { document.documentElement.style.setProperty('--a11y-font-size', '32px'); }
+    }
+    li.addEventListener('click', kies);
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kies(); } });
+  });
+
+  // De keuzes in het voorbeeld reageren ook op één klik.
+  document.querySelectorAll('.options li[data-vb]').forEach(function (li) {
+    li.setAttribute('tabindex', '0');
+    li.setAttribute('role', 'button');
+    function kiesVb() {
+      document.querySelectorAll('.options li[data-vb]').forEach(function (o) { o.removeAttribute('aria-selected'); });
+      li.setAttribute('aria-selected', 'true');
+      var n = li.dataset.vb;
+      var t = li.textContent.replace(n, '').trim();
+      logKlik('voorbeeld-voorstel', n, t);
+      var st = li.closest('.voorstel').querySelector('.vb-status');
+      if (st) { st.textContent = 'Je koos ' + n + ' — ' + t + '. Klik op de ? om hier dieper op te gaan.'; }
+    }
+    li.addEventListener('click', kiesVb);
+    li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kiesVb(); } });
+  });
+
+  // DE ?-KNOP: drie andere opties, gehaald uit wat de gebruiker al klikte.
+  function zichtbaarInBlok(blok) {
+    var al = [];
+    blok.querySelectorAll('.options li').forEach(function (li) {
+      al.push(li.textContent.replace(/^\s*\d+\s*/, '').trim());
+    });
+    return al;
+  }
+  function andereUitLog(blok) {
+    var kandidaten = [];
+    logRegels.slice().reverse().forEach(function (r) {
+      if (r.keuze && (r.onderwerp === 'voorstel' || r.onderwerp === 'voorbeeld' ||
+                      r.onderwerp === 'andere-optie' || r.onderwerp === 'menu 1 beeld')) {
+        kandidaten.push(r.keuze);
+      }
+    });
+    kandidaten.push('Alleen het antwoord tonen, niets eromheen');
+    kandidaten.push('Alles op één scherm, zonder scrollen');
+    kandidaten.push('Bedragen in cijfers én woorden');
+    kandidaten.push('Kortere zinnen, één idee per regel');
+    kandidaten.push('Meer witruimte tussen de regels');
+    var al = zichtbaarInBlok(blok);
+    var uniek = [];
+    kandidaten.forEach(function (k) {
+      if (!k || al.indexOf(k) >= 0 || uniek.indexOf(k) >= 0) { return; }
+      uniek.push(k);
+    });
+    return uniek.slice(0, 3);
+  }
+
+  var telRonde = {};
+  document.querySelectorAll('.voorstel').forEach(function (blok) {
+    var knop = blok.querySelector('.btn-dieper');
+    var paneel = blok.querySelector('.dieper-blok');
+    var status = blok.querySelector('.dieper-status');
+    var lijst = paneel ? paneel.querySelector('.dieper-keuzes') : null;
+    if (!knop || !paneel || !lijst) { return; }
+
+    knop.addEventListener('click', function () {
+      paneel.hidden = false;
+      knop.setAttribute('aria-expanded', 'true');
+
+      var ronde = (telRonde.k = (telRonde.k || 0) + 1);
+      if (ronde > 3) {
+        if (status) {
+          status.textContent = 'Je hebt alle 3 rondes gezien: 9 andere opties. Meer heb ik nog niet. Kies er hierboven één, of zeg "stop".';
+        }
+        logKlik('andere-optie-knop', '?', 'rondes op');
+        paneel.scrollIntoView({block: 'nearest'});
+        return;
+      }
+
+      var set = andereUitLog(blok);
+      lijst.innerHTML = '';
+      set.forEach(function (tekst, n) {
+        var li = document.createElement('li');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('role', 'button');
+        li.innerHTML = '<span class="num">' + (n + 1) + '</span> ' + tekst;
+        function kiesAndere() {
+          lijst.querySelectorAll('li').forEach(function (o) { o.removeAttribute('aria-selected'); });
+          li.setAttribute('aria-selected', 'true');
+          if (status) { status.textContent = 'Gekozen: ' + tekst + '. Klik weer op ? voor de volgende uit je geschiedenis.'; }
+          logKlik('andere-optie', n + 1, tekst);
+        }
+        li.addEventListener('click', kiesAndere);
+        li.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kiesAndere(); }
+        });
+        lijst.appendChild(li);
+      });
+      if (status) {
+        status.textContent = 'Ronde ' + ronde + ' van 3: drie andere opties uit wat je al klikte.'
+          + (ronde < 3 ? ' Klik ? voor de volgende ronde.' : ' Dit was de laatste ronde.');
+      }
+      logKlik('andere-optie-knop', '?', 'drie andere opties');
+      paneel.scrollIntoView({block: 'nearest'});
+    });
+  });
+</script>
+</body>
+</html>

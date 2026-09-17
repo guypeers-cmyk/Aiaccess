@@ -1,0 +1,538 @@
+/* ============================================================
+   CHAT ACCESSIBILITY LAYER — v1.0
+   Doel: de chat tonen aan iemand die NIET kan typen en SLECHTZIEND is.
+   Regels: grote letters, hoog contrast, korte regels, veel ruimte,
+           geen beweging, geen kleine knoppen, nooit kleur als enige signaal.
+
+   ALLES INSTELBAAR MET 1 CIJFER.
+   Wil je groter? Verander alleen  --a11y-font-size  hieronder.
+   ============================================================ */
+
+:root {
+  /* ---- DE ENE KNOP: lettergrootte ---------------------------- */
+  --a11y-font-size: 24px;        /* 24 = groot. 28 = heel groot. 32 = extra groot. */
+
+  /* ---- afgeleid, meestal niet aanpassen --------------------- */
+  --a11y-line-height: 1.7;       /* regels ver uit elkaar = makkelijker lezen   */
+  --a11y-letter-spacing: 0.02em; /* letterafstand, voorkomt dat letters plakken  */
+  --a11y-word-spacing: 0.08em;
+
+  /* ---- regelbreedte: nooit lange regels --------------------- */
+  --a11y-measure: 60ch;          /* tussen 45ch en 70ch is goed                 */
+
+  /* ---- contrast: donker op licht, 15:1 ---------------------- */
+  --a11y-ink: #141414;           /* bijna-zwart, minder schittering dan #000    */
+  --a11y-paper: #fbfbf9;         /* bijna-wit, geen fel wit                     */
+  --a11y-soft: #f0f0ee;          /* vlakken: iets donkerder dan de achtergrond  */
+  --a11y-line: #6b6b6b;          /* randen: duidelijk zichtbaar, niet grijs-op-grijs */
+  --a11y-accent: #0b3d91;        /* koppen/merkteken, 9:1 op licht              */
+
+  /* ---- ruimte: veel wit tussen blokken ---------------------- */
+  --a11y-space: 1.4rem;
+  --a11y-radius: 12px;
+
+  /* ---- raakvlakken: groot ----------------------------------- */
+  --a11y-target: 64px;           /* alle knoppen minimaal 64x64                 */
+  --a11y-focus: 5px;             /* focusring dik en zichtbaar                  */
+}
+
+/* ============================================================
+   1. BASIS — het hele chatvenster
+   ============================================================ */
+
+html {
+  font-size: 100%;
+}
+
+body,
+.a11y-chat {
+  background: var(--a11y-paper) !important;
+  color: var(--a11y-ink) !important;
+  font-family: Verdana, Tahoma, "Atkinson Hyperlegible",
+               "Segoe UI", system-ui, Arial, sans-serif !important;
+  font-size: var(--a11y-font-size) !important;
+  line-height: var(--a11y-line-height) !important;
+  letter-spacing: var(--a11y-letter-spacing) !important;
+  word-spacing: var(--a11y-word-spacing);
+  text-align: left !important;      /* nooit uitvullen: geen 'rivieren' */
+  font-weight: 450;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* nooit cursief of ALL CAPS voor lopende tekst */
+.a11y-chat em,
+.a11y-chat i {
+  font-style: normal !important;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   2. BERICHTEN — één kolom, nooit smalle bubbels naast elkaar
+   ============================================================ */
+
+.a11y-chat,
+.a11y-thread {
+  max-width: var(--a11y-measure);
+  margin: 0 auto;
+  padding: calc(var(--a11y-space) * 1.2) var(--a11y-space);
+}
+
+.a11y-message {
+  display: block;
+  width: 100%;
+  margin: 0 0 calc(var(--a11y-space) * 1.6) 0;
+  padding: var(--a11y-space);
+  background: #ffffff;
+  border: 3px solid var(--a11y-line);        /* randen in plaats van kleur */
+  border-radius: var(--a11y-radius);
+}
+
+/* Wie spreekt? Altijd in WOORDEN, nooit alleen kleur of positie. */
+.a11y-message::before {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a11y-accent);
+}
+
+.a11y-message[data-from="user"] {
+  background: var(--a11y-soft);
+  border-style: dashed;                      /* vormverschil, niet kleurverschil */
+}
+
+.a11y-message[data-from="user"]::before  { content: "JIJ ZEI"; }
+.a11y-message[data-from="agent"]::before { content: "ASSISTENT"; }
+.a11y-message[data-from="system"]::before{ content: "SYSTEEM"; }
+
+/* ============================================================
+   3. OPTIES — groot, genummerd, ver uit elkaar
+   ============================================================ */
+
+.a11y-options {
+  list-style: none;
+  margin: calc(var(--a11y-space) * 1.4) 0 0 0;
+  padding: 0;
+  display: grid;
+  gap: calc(var(--a11y-space) * 0.8);        /* nooit dicht bij elkaar */
+}
+
+.a11y-option,
+.a11y-options li,
+.a11y-options button,
+.a11y-options a {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--a11y-target);            /* minimaal 64px hoog */
+  padding: 1rem 1.2rem;
+  background: #ffffff;
+  color: var(--a11y-ink);
+  border: 4px solid var(--a11y-ink);
+  border-radius: var(--a11y-radius);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: default;                           /* geen muis nodig */
+}
+
+/* het nummer is het belangrijkste: groot en los */
+.a11y-option-number,
+.a11y-option::before {
+  flex: 0 0 auto;
+  min-width: 2.2em;
+  text-align: center;
+  font-size: 1.15em;
+  font-weight: 800;
+  color: var(--a11y-accent);
+}
+
+/* ============================================================
+   3b. KLIKKEN MAG, TYPEN NIET — kleine beweging, korte afstand
+   ============================================================ */
+
+/* Een klik is een volledig antwoord. Eén klik per keuze. */
+.a11y-options li,
+.a11y-options button,
+.a11y-option {
+  cursor: pointer;                 /* zichtbaar aanklikbaar */
+  user-select: none;               /* geen tekst selecteren per ongeluk */
+  touch-action: manipulation;      /* geen dubbeltik-zoom */
+}
+
+/* Nooit hover nodig om iets te zien: hover mag alleen de rand dikker maken. */
+.a11y-options li:hover,
+.a11y-options button:hover,
+.a11y-option:hover,
+.a11y-options li:focus-visible,
+.a11y-options button:focus-visible {
+  border-width: 6px;               /* zelfde info ook zonder muis */
+}
+
+/* Gekozen optie: geen kleur als enige signaal — er komt ook een woord bij. */
+.a11y-option[aria-pressed="true"],
+.a11y-options li[aria-selected="true"] {
+  border-style: double;
+  border-width: 8px;
+}
+
+/* Alles wat de gebruiker nodig heeft dicht bij elkaar:
+   de keuzelijst blijft onderaan in beeld als dat kan. */
+.a11y-options--sticky {
+  position: sticky;
+  bottom: 0.4rem;
+  background: var(--a11y-paper);
+  padding-block: 0.6rem;
+  z-index: 5;
+}
+
+/* Nooit een piepklein pijltje of icoontje als enige weg. */
+.a11y-chat [aria-haspopup],
+.a11y-chat select {
+  min-height: var(--a11y-target);
+  min-width: var(--a11y-target);
+  font: inherit;
+  font-weight: 700;
+  border: 4px solid var(--a11y-ink);
+}
+
+/* Typen is nooit verplicht: het invoerveld is groot, maar altijd optioneel. */
+.a11y-chat textarea,
+.a11y-chat input[type="text"] {
+  min-height: var(--a11y-target);
+  font: inherit;
+  font-size: var(--a11y-font-size);
+  line-height: 1.5;
+  padding: 0.8rem 1rem;
+  border: 4px solid var(--a11y-ink);
+}
+
+/* ============================================================
+   3c. DE TWEE KEERMENU'S — uitklappen met één klik
+   ============================================================ */
+
+.a11y-chat details,
+details.a11y-menu {
+  border: 4px solid var(--a11y-ink);
+  border-radius: var(--a11y-radius);
+  background: #ffffff;
+  margin: 0 0 calc(var(--a11y-space) * 0.8) 0;
+  padding: 0.4rem;
+}
+
+.a11y-chat details > summary,
+details.a11y-menu > summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: var(--a11y-target);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 800;
+  border-radius: var(--a11y-radius);
+}
+
+.a11y-chat details > summary::-webkit-details-marker { display: none; }
+.a11y-chat details > summary::before { content: "\25B8"; font-weight: 800; }
+.a11y-chat details[open] > summary::before { content: "\25BE"; }
+
+/* de items in het menu: groot, los, één klik */
+.a11y-chat details ul > li,
+.a11y-chat details .a11y-menu-item {
+  min-height: var(--a11y-target);
+  padding: 0.7rem 0.9rem;
+  border: 3px solid var(--a11y-line);
+  border-radius: var(--a11y-radius);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  margin-bottom: 0.6rem;
+}
+
+/* hover mag alleen de rand dikker maken — nooit iets tonen dat anders verborgen is */
+.a11y-chat details ul > li:hover,
+.a11y-chat details ul > li:focus-visible { border-width: 5px; }
+.a11y-chat details ul > li[aria-selected="true"] { border-style: double; border-width: 7px; }
+
+/* ============================================================
+   4. KNOPPEN EN INVULVELDEN — groot, ook al typt de gebruiker niet
+   ============================================================ */
+
+.a11y-chat button,
+.a11y-chat [role="button"],
+.a11y-chat a.button {
+  min-height: var(--a11y-target);
+  min-width: var(--a11y-target);
+  padding: 1rem 1.4rem;
+  font: inherit;
+  font-weight: 700;
+  background: #ffffff;
+  color: var(--a11y-ink);
+  border: 4px solid var(--a11y-ink);
+  border-radius: var(--a11y-radius);
+}
+
+.a11y-chat a,
+.a11y-chat a:visited {
+  color: var(--a11y-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;            /* nooit alleen kleur */
+}
+
+/* tekstveld: alleen als de gebruiker een helper heeft */
+.a11y-chat textarea,
+.a11y-chat input[type="text"] {
+  width: 100%;
+  min-height: 6rem;
+  padding: 1rem;
+  font: inherit;
+  line-height: 1.6;
+  color: var(--a11y-ink);
+  background: #ffffff;
+  border: 4px solid var(--a11y-ink);
+  border-radius: var(--a11y-radius);
+}
+
+/* ============================================================
+   5. FOCUS — altijd dik en zichtbaar (voor hulp van een ander)
+   ============================================================ */
+
+.a11y-chat *:focus,
+.a11y-chat *:focus-visible,
+.a11y-chat a:focus,
+.a11y-chat button:focus {
+  outline: var(--a11y-focus) solid #b30000 !important;
+  outline-offset: 4px !important;
+  border-radius: var(--a11y-radius);
+}
+
+/* ============================================================
+   6. TABELLEN — nooit een tabel tonen; wordt een lijst
+   ============================================================ */
+
+.a11y-chat table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.a11y-chat table,
+.a11y-chat thead,
+.a11y-chat tbody,
+.a11y-chat tr,
+.a11y-chat th,
+.a11y-chat td {
+  display: block;                            /* elke cel op zijn eigen regel */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.a11y-chat thead { position: absolute; left: -9999px; }  /* koppen blijven voor schermlezers */
+
+.a11y-chat tr {
+  margin-bottom: var(--a11y-space);
+  padding: var(--a11y-space);
+  border: 3px solid var(--a11y-line);
+  border-radius: var(--a11y-radius);
+  background: #ffffff;
+}
+
+.a11y-chat td { padding: 0.35rem 0; border: 0; }
+
+/* label komt automatisch voor de waarde */
+.a11y-chat td::before {
+  content: attr(data-label) ": ";
+  font-weight: 700;
+  color: var(--a11y-accent);
+}
+
+/* ============================================================
+   7. CODE EN GETALLEN — leesbaar, geen kleine lettertjes
+   ============================================================ */
+
+.a11y-chat code,
+.a11y-chat pre,
+.a11y-chat kbd,
+.a11y-chat samp {
+  font-family: "Consolas", "DejaVu Sans Mono", monospace;
+  font-size: 1em;                            /* nooit kleiner dan de rest */
+  line-height: 1.6;
+  background: var(--a11y-soft);
+  color: var(--a11y-ink);
+  border: 2px solid var(--a11y-line);
+  border-radius: 8px;
+  padding: 0.15em 0.4em;
+}
+
+.a11y-chat pre {
+  display: block;
+  padding: var(--a11y-space);
+  white-space: pre-wrap;                     /* geen horizontaal scrollen */
+  word-break: break-word;
+}
+
+/* ============================================================
+   8. GEEN BEWEGING, GEEN FLITS, GEEN AUTOPLAY
+   ============================================================ */
+
+.a11y-chat *,
+.a11y-chat *::before,
+.a11y-chat *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+.a11y-chat video,
+.a11y-chat iframe,
+.a11y-chat [class*="carousel"],
+.a11y-chat [class*="spinner"],
+.a11y-chat [class*="loading"] {
+  display: none !important;                  /* wordt vervangen door tekst */
+}
+
+/* laat systeemvoorkeuren altijd winnen */
+@media (prefers-reduced-motion: reduce) {
+  .a11y-chat *, .a11y-chat *::before, .a11y-chat *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   9. WARMOE HET SYSTEEM ZELF KOMT: hoog contrast / donker
+   ============================================================ */
+
+@media (prefers-contrast: more) {
+  :root {
+    --a11y-ink: #000000;
+    --a11y-paper: #ffffff;
+    --a11y-line: #000000;
+    --a11y-accent: #000000;
+  }
+  .a11y-message,
+  .a11y-option,
+  .a11y-chat button { border-width: 5px !important; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --a11y-ink: #f4f4f1;
+    --a11y-paper: #121212;
+    --a11y-soft: #1e1e1e;
+    --a11y-line: #b9b9b9;
+    --a11y-accent: #ffd84d;
+  }
+  .a11y-message { background: #181818; }
+  .a11y-option,
+  .a11y-chat button { background: #181818; color: var(--a11y-ink); border-color: var(--a11y-line); }
+}
+
+/* ============================================================
+   10. TEKSTGROOTTE EXTRA: systeem + browser + 400% zoom
+   ============================================================ */
+
+@media (min-resolution: 2dppx) {
+  :root { --a11y-line: #5a5a5a; }            /* scherpe randen op retina */
+}
+
+/* bij extreme zoom: alles één kolom, niets naast elkaar */
+@media (max-width: 480px) {
+  :root { --a11y-measure: 100%; }
+  .a11y-chat { padding: var(--a11y-space) 0.9rem; }
+}
+
+/* ============================================================
+   11. AFDRUKKEN — voor als iemand het op papier wil
+   ============================================================ */
+
+@media print {
+  .a11y-chat { max-width: 100%; color: #000; background: #fff; }
+  .a11y-message { page-break-inside: avoid; border-color: #000; }
+}
+
+/* ============================================================
+   EINDE. Eén cijfer aanpassen = hele chat groter of kleiner.
+   ============================================================ */
+
+
+/* ============================================================
+   3d. DE DIEPER-KNOP (?) — bij ELK voorstel, één klik, nooit vasthouden
+   ============================================================ */
+
+.a11y-chat .btn-dieper,
+.btn-dieper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-height: var(--a11y-target);
+  margin: 0.8rem 0 0 0;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  color: var(--a11y-ink);
+  background: #ffffff;
+  border: 4px dashed var(--a11y-ink);   /* dashed: dit is de uitweg, niet de hoofdkeuze */
+  border-radius: var(--a11y-radius);
+  cursor: pointer;
+}
+
+.a11y-chat .btn-dieper:hover,
+.a11y-chat .btn-dieper:focus-visible { background: var(--a11y-soft); outline: 4px solid var(--a11y-ink); outline-offset: 2px; }
+.btn-dieper[aria-expanded="true"] { border-style: solid; }
+
+.btn-dieper .vraagteken {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  border: 3px solid var(--a11y-ink);
+  font-weight: 900;
+}
+
+.dieper-blok { margin-top: calc(var(--a11y-space) * 0.8); padding: 0.8rem 1rem; border: 4px solid var(--a11y-ink); border-radius: var(--a11y-radius); background: #ffffff; }
+.dieper-blok[hidden] { display: none; }
+.dieper-vraag { margin: 0 0 0.6rem; font-weight: 700; }
+
+/* ============================================================
+   9b. EXPLICIETE DONKERE VERSIE — de gebruiker kiest, met één klik
+   Zelfde opbouw, alleen de kleuren wisselen. Geen animatie.
+   Gebruik: <html data-thema="donker"> bij één klik op "Donker".
+   ============================================================ */
+
+html[data-thema="donker"] {
+  --a11y-ink: #f2f3f5;      /* lichte letters                        */
+  --a11y-paper: #121317;    /* donkere achtergrond                   */
+  --a11y-soft: #1b1d22;     /* vlakken                               */
+  --a11y-line: #3f444c;     /* randen (blijven zichtbaar, niet fel)  */
+  --a11y-accent: #9dc0f8;   /* koppen en merkteken, > 7:1 op donker  */
+}
+
+html[data-thema="donker"] .a11y-chat,
+html[data-thema="donker"] .a11y-message,
+html[data-thema="donker"] .a11y-option,
+html[data-thema="donker"] details.a11y-menu {
+  background: var(--a11y-paper);
+  color: var(--a11y-ink);
+}
+
+html[data-thema="donker"] .a11y-option[aria-selected="true"] {
+  border-color: var(--a11y-ink);
+  border-width: 3px;
+}
+
+/* Wit wordt nooit hard gecodeerd: alles loopt via de twee tokens hierboven,
+   zodat één klik de hele chat omzet zonder dat er iets onleesbaar wordt. */
